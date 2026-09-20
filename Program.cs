@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using TdLib;
 using Televim.Configuration;
+using Televim.Events;
 using Televim.Telegram;
 using Televim.Telegram.Updates;
 using Televim.Telegram.Updates.Handlers;

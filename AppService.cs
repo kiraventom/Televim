@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Televim.Configuration;
+using Televim.Events;
 
 namespace Televim;
 
