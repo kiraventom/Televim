@@ -12,7 +12,7 @@ public interface IConfigService
     Task<Config> GetCurrent();
 }
 
-public class ConfigService(IEventService eventService, Paths paths)
+public class ConfigService(IEventService eventService, Paths paths) : IConfigService
 {
     private const string CONFIG_FILENAME = "config.json";
     private static readonly JsonSerializerOptions Options = new JsonSerializerOptions() 

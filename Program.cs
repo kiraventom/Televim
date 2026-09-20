@@ -4,7 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using TdLib;
 using Televim.Configuration;
+using Televim.Telegram;
+using Televim.Telegram.Updates;
+using Televim.Telegram.Updates.Handlers;
 
 namespace Televim;
 
@@ -25,16 +29,19 @@ internal class Program
 
         try
         {
-            var paths = BuildPaths();
-
             var builder = Host.CreateApplicationBuilder();
 
             builder.Services.AddSerilog(ConfigureLogger)
-                .AddSingleton<Paths>(paths)
+                .AddSingleton<Paths>(BuildPaths)
                 .AddSingleton<IEventService, EventService>()
-                .AddSingleton<IConfigService, ConfigService>();
+                // TODO Renderer right after event service so it can receive events from other services
+                .AddSingleton<IConfigService, ConfigService>()
+                .AddSingleton<IUpdateRouter, UpdateRouter>()
+                .AddSingleton<TdClient>(ConfigureTdClient)
+                .AddSingleton<ITelegramClient, TelegramClient>();
 
-            RegisterEventTargets(builder.Services);
+            RegisterImplementations(builder.Services, typeof(IEventTarget<>));
+            RegisterImplementations(builder.Services, typeof(IUpdateHandler<>));
 
             builder.Services.AddHostedService<AppService>();
 
@@ -51,23 +58,30 @@ internal class Program
         }
     }
 
-    private static void RegisterEventTargets(IServiceCollection collection)
+    private static void RegisterImplementations(IServiceCollection collection, Type @interface)
     {
-        var targetInterfaceType = typeof(IEventTarget<>);
-        var eventTargetTypes = Assembly.GetExecutingAssembly().GetTypes()
+        if (!@interface.IsGenericType)
+            throw new NotSupportedException($"Type {@interface.FullName} is not generic");
+
+        var classes = Assembly.GetExecutingAssembly().GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract)
-            .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == targetInterfaceType));
+            .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == @interface));
 
-        foreach (var type in eventTargetTypes)
+        foreach (var @class in classes)
         {
-            var implementedInterfaces = type.GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == targetInterfaceType);
+            var implemented = @class.GetInterfaces()
+                .Where(i => i.GetGenericTypeDefinition() == @interface);
 
-            foreach (var @interface in implementedInterfaces)
+            foreach (var @implementedInterface in implemented)
             {
-                collection.AddTransient(@interface, type);
+                collection.AddTransient(@implementedInterface, @class);
             }
         }
+    }
+
+    private static TdClient ConfigureTdClient(IServiceProvider provider)
+    {
+        return new TdClient();
     }
 
     private static void ConfigureLogger(IServiceProvider provider, LoggerConfiguration configuration)
@@ -85,21 +99,7 @@ internal class Program
             .WriteTo.Console(outputTemplate: template, restrictedToMinimumLevel: LogEventLevel.Information);
     }
 
-        private static Config BuildConfig(IServiceProvider provider)
-    {
-        var paths = provider.GetRequiredService<Paths>();
-        var configFilePath = Path.Combine(paths.ConfigDir, CONFIG_FILENAME);
-
-        if (!File.Exists(configFilePath))
-        {
-            Config.Default.Save(configFilePath); 
-            throw new InvalidOperationException($"Default config created at {configFilePath}. Fill it out and restart.");
-        }
-
-        return Config.Load(configFilePath);
-    }
-
-    private static Paths BuildPaths()
+    private static Paths BuildPaths(IServiceProvider sp)
     {
         var configDirPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var dataDirPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -112,6 +112,4 @@ internal class Program
 
         return new Paths(appConfigDirPath, appDataDirPath);
     }
-
-
 }
