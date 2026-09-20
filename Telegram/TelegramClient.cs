@@ -1,12 +1,8 @@
 using TdLib;
+using Televim.Configuration;
 using Televim.Telegram.Updates;
 
 namespace Televim.Telegram;
-
-public interface ITelegramClient
-{
-
-}
 
 public class TelegramClient : ITelegramClient
 {
@@ -24,5 +20,18 @@ public class TelegramClient : ITelegramClient
     private void OnTdUpdate(object sender, TdApi.Update e)
     {
         UpdateRouter.Route(e);
+    }
+
+    public async Task SetTdLibParameters(TDLibConfig tdLibConfig)
+    {
+        await Client.SetTdlibParametersAsync(
+            apiId: tdLibConfig.ApiId,
+            apiHash: tdLibConfig.ApiHash,
+            databaseDirectory: tdLibConfig.DatabaseDir,
+            useSecretChats: tdLibConfig.UseSecretChats,
+            deviceModel: tdLibConfig.DeviceModel,
+            systemVersion: tdLibConfig.SystemVersion,
+            systemLanguageCode: tdLibConfig.SystemLanguageCode,
+            useMessageDatabase: tdLibConfig.UseMessageDatabase);
     }
 }

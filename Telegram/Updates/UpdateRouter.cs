@@ -5,11 +5,6 @@ using Televim.Telegram.Updates.Handlers;
 
 namespace Televim.Telegram.Updates;
 
-public interface IUpdateRouter
-{
-    void Route(TdApi.Update update);
-}
-
 public class UpdateRouter : IAsyncDisposable, IUpdateRouter
 {
     private readonly Channel<TdApi.Update> _channel;

@@ -16,7 +16,7 @@ public record Paths(string ConfigDir, string DataDir);
 
 internal class Program
 {
-    private const string PROJECT_NAME = nameof(Televim);
+    public const string PROJECT_NAME = nameof(Televim);
 
     private static async Task Main(string[] args)
     {

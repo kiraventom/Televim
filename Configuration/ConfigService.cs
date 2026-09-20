@@ -6,13 +6,10 @@ namespace Televim.Configuration;
 public record struct InvalidJsonEvent(JsonException ex);
 public record struct ConfigReadFailEvent(Exception ex);
 public record struct ConfigWriteFailEvent(Exception ex);
+public record struct DefaultConfigGeneratedEvent(string ConfigFilePath);
+public record struct DefaultConfigDetectedEvent(string ConfigFilePath, params string[] PropsToChange);
 
-public interface IConfigService
-{
-    Task<Config> GetCurrent();
-}
-
-public class ConfigService(IEventService eventService, Paths paths) : IConfigService
+public class ConfigService : IConfigService
 {
     private const string CONFIG_FILENAME = "config.json";
     private static readonly JsonSerializerOptions Options = new JsonSerializerOptions() 
@@ -23,10 +20,19 @@ public class ConfigService(IEventService eventService, Paths paths) : IConfigSer
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    private string ConfigFilePath { get; } = Path.Combine(paths.ConfigDir, CONFIG_FILENAME);
+    private readonly IEventService _eventService;
+    private readonly string _configFilePath;
+    private readonly Config _defaultConfig;
 
     private Config CurrentConfig { get; set; }
     private DateTime LastReadTime { get; set; }
+
+    public ConfigService(IEventService eventService, Paths paths)
+    {
+        _eventService = eventService;
+        _configFilePath = Path.Combine(paths.ConfigDir, CONFIG_FILENAME);
+        _defaultConfig = DefaultConfigGenerator.Generate(paths);
+    }
 
     public async Task<Config> GetCurrent()
     {
@@ -38,44 +44,56 @@ public class ConfigService(IEventService eventService, Paths paths) : IConfigSer
 
     private bool DidConfigUpdate()
     {
-        var lastWrite = File.GetLastWriteTimeUtc(ConfigFilePath);
+        var lastWrite = File.GetLastWriteTimeUtc(_configFilePath);
         return lastWrite > LastReadTime;
     }
 
     private async Task<(Config, DateTime)> ReadFromFile()
     {
-        Config config = CurrentConfig ?? Config.Default;
+        Config config = CurrentConfig;
 
-        if (!File.Exists(ConfigFilePath))
+        if (!File.Exists(_configFilePath))
             await WriteToFile(config);
 
         try
         {
-            using var file = File.OpenRead(ConfigFilePath);
+            using var file = File.OpenRead(_configFilePath);
             config = await JsonSerializer.DeserializeAsync<Config>(file, Options);
         }
         catch (JsonException ex)
         {
-            await eventService.Raise(new InvalidJsonEvent(ex));
+            await _eventService.Raise(new InvalidJsonEvent(ex));
         }
         catch (Exception ex)
         {
-            await eventService.Raise(new ConfigReadFailEvent(ex));
+            await _eventService.Raise(new ConfigReadFailEvent(ex));
         }
 
-        return (config, File.GetLastWriteTimeUtc(ConfigFilePath));
+        if (config.IsDefault())
+        {
+            await _eventService.Raise(new DefaultConfigDetectedEvent(_configFilePath, nameof(Config.TDLib.ApiId), nameof(Config.TDLib.ApiHash)));
+        }
+
+        return (config, File.GetLastWriteTimeUtc(_configFilePath));
     }
 
     private async Task WriteToFile(Config config)
     {
         try
         {
-            using var file = File.Create(ConfigFilePath);
+            using var file = File.Create(_configFilePath);
+
+            if (config is null)
+            {
+                config = _defaultConfig;
+                await _eventService.Raise(new DefaultConfigGeneratedEvent(_configFilePath));
+            }
+
             await JsonSerializer.SerializeAsync(file, config, Options);
         }
         catch (Exception ex)
         {
-            await eventService.Raise(new ConfigWriteFailEvent(ex));
+            await _eventService.Raise(new ConfigWriteFailEvent(ex));
         }
     }
 }
