@@ -1,6 +1,6 @@
 using TdLib;
 
-namespace Televim.Telegram.Updates.Handlers;
+namespace Televim.Core.Telegram.Updates.Handlers;
 
 public abstract class UpdateHandler<T>(ITelegramClient client) : IUpdateHandler<T> where T : TdApi.Update
 {

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Hosting;
-using Televim.Configuration;
-using Televim.Events;
+using Televim.Core.Configuration;
+using Televim.Core.Events;
 
-namespace Televim;
+namespace Televim.Core;
 
 public class AppService() : BackgroundService, 
     IEventTarget<DefaultConfigGeneratedEvent>,

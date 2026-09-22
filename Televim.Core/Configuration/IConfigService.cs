@@ -1,4 +1,4 @@
-namespace Televim.Configuration;
+namespace Televim.Core.Configuration;
 
 public interface IConfigService
 {

@@ -1,8 +1,8 @@
 using TdLib;
-using Televim.Configuration;
+using Televim.Core.Configuration;
 using static TdLib.TdApi.AuthorizationState;
 
-namespace Televim.Telegram.Updates.Handlers;
+namespace Televim.Core.Telegram.Updates.Handlers;
 
 public class AuthorizationStateHandler(ITelegramClient client, IConfigService configService) : UpdateHandler<TdApi.Update.UpdateAuthorizationState>(client)
 {

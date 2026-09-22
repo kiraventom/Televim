@@ -1,4 +1,4 @@
-namespace Televim.Events;
+namespace Televim.Core.Events;
 
 public interface IEventTarget<T>
 {

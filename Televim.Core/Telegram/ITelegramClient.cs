@@ -1,6 +1,6 @@
-using Televim.Configuration;
+using Televim.Core.Configuration;
 
-namespace Televim.Telegram;
+namespace Televim.Core.Telegram;
 
 public interface ITelegramClient
 {

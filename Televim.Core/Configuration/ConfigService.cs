@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Televim.Events;
+using Televim.Core.Events;
 
-namespace Televim.Configuration;
+namespace Televim.Core.Configuration;
 
 public record struct InvalidJsonEvent(JsonException ex);
 public record struct ConfigReadFailEvent(Exception ex);

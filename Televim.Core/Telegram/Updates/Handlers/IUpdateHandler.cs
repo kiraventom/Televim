@@ -1,6 +1,6 @@
 using TdLib;
 
-namespace Televim.Telegram.Updates.Handlers;
+namespace Televim.Core.Telegram.Updates.Handlers;
 
 public interface IUpdateHandler
 {

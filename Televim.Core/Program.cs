@@ -4,19 +4,19 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using TdLib;
-using Televim.Configuration;
-using Televim.Events;
-using Televim.Telegram;
-using Televim.Telegram.Updates;
-using Televim.Telegram.Updates.Handlers;
+using Televim.Core.Configuration;
+using Televim.Core.Events;
+using Televim.Core.Telegram;
+using Televim.Core.Telegram.Updates;
+using Televim.Core.Telegram.Updates.Handlers;
 
-namespace Televim;
+namespace Televim.Core.Core;
 
 public record Paths(string ConfigDir, string DataDir);
 
 internal class Program
 {
-    public const string PROJECT_NAME = nameof(Televim);
+    public const string PROJECT_NAME = "Televim";
 
     private static async Task Main(string[] args)
     {

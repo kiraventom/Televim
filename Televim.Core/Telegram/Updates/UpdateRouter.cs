@@ -1,9 +1,9 @@
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using TdLib;
-using Televim.Telegram.Updates.Handlers;
+using Televim.Core.Telegram.Updates.Handlers;
 
-namespace Televim.Telegram.Updates;
+namespace Televim.Core.Telegram.Updates;
 
 public class UpdateRouter : IAsyncDisposable, IUpdateRouter
 {
