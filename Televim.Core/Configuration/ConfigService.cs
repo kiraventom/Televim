@@ -4,13 +4,13 @@ using Televim.Core.Events;
 
 namespace Televim.Core.Configuration;
 
-public record struct InvalidJsonEvent(JsonException ex);
-public record struct ConfigReadFailEvent(Exception ex);
-public record struct ConfigWriteFailEvent(Exception ex);
-public record struct DefaultConfigGeneratedEvent(string ConfigFilePath);
-public record struct DefaultConfigDetectedEvent(string ConfigFilePath, params string[] PropsToChange);
+internal record struct InvalidJsonEvent(JsonException ex);
+internal record struct ConfigReadFailEvent(Exception ex);
+internal record struct ConfigWriteFailEvent(Exception ex);
+internal record struct DefaultConfigGeneratedEvent(string ConfigFilePath);
+internal record struct DefaultConfigDetectedEvent(string ConfigFilePath, params string[] PropsToChange);
 
-public class ConfigService : IConfigService
+internal class ConfigService : IConfigService
 {
     private const string CONFIG_FILENAME = "config.json";
     private static readonly JsonSerializerOptions Options = new JsonSerializerOptions() 

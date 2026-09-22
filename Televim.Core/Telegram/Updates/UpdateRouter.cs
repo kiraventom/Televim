@@ -5,7 +5,7 @@ using Televim.Core.Telegram.Updates.Handlers;
 
 namespace Televim.Core.Telegram.Updates;
 
-public class UpdateRouter : IAsyncDisposable, IUpdateRouter
+internal class UpdateRouter : IAsyncDisposable, IUpdateRouter
 {
     private readonly Channel<TdApi.Update> _channel;
     private readonly Task _loop;

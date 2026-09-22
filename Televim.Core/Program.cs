@@ -10,9 +10,9 @@ using Televim.Core.Telegram;
 using Televim.Core.Telegram.Updates;
 using Televim.Core.Telegram.Updates.Handlers;
 
-namespace Televim.Core.Core;
+namespace Televim.Core;
 
-public record Paths(string ConfigDir, string DataDir);
+internal record Paths(string ConfigDir, string DataDir);
 
 internal class Program
 {
@@ -79,10 +79,7 @@ internal class Program
         }
     }
 
-    private static TdClient ConfigureTdClient(IServiceProvider provider)
-    {
-        return new TdClient();
-    }
+    private static TdClient ConfigureTdClient(IServiceProvider provider) => new TdClient();
 
     private static void ConfigureLogger(IServiceProvider provider, LoggerConfiguration configuration)
     {

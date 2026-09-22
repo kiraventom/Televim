@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Televim.Core.Events;
 
-public class EventService(IServiceProvider sp) : IEventService
+internal class EventService(IServiceProvider sp) : IEventService
 {
     public async Task Raise<T> (T @event)
     {

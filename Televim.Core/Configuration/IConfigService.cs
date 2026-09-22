@@ -1,6 +1,6 @@
 namespace Televim.Core.Configuration;
 
-public interface IConfigService
+internal interface IConfigService
 {
     Task<Config> GetCurrent();
 }

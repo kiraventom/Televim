@@ -4,7 +4,7 @@ using Televim.Core.Events;
 
 namespace Televim.Core;
 
-public class AppService() : BackgroundService, 
+internal class AppService() : BackgroundService, 
     IEventTarget<DefaultConfigGeneratedEvent>,
     IEventTarget<DefaultConfigDetectedEvent>
 {

@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Televim.Core.Configuration;
 
-public static class DefaultConfigGenerator
+internal static class DefaultConfigGenerator
 {
     public const int DEFAULT_API_ID = 123456789;
     public static readonly string DEFAULT_API_HASH = Guid.Empty.ToString("N");

@@ -2,7 +2,7 @@ using TdLib;
 
 namespace Televim.Core.Telegram.Updates;
 
-public interface IUpdateRouter
+internal interface IUpdateRouter
 {
     void Route(TdApi.Update update);
 }

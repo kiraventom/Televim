@@ -4,7 +4,7 @@ using static TdLib.TdApi.AuthorizationState;
 
 namespace Televim.Core.Telegram.Updates.Handlers;
 
-public class AuthorizationStateHandler(ITelegramClient client, IConfigService configService) : UpdateHandler<TdApi.Update.UpdateAuthorizationState>(client)
+internal class AuthorizationStateHandler(ITelegramClient client, IConfigService configService) : UpdateHandler<TdApi.Update.UpdateAuthorizationState>(client)
 {
     public override async Task Handle(TdApi.Update.UpdateAuthorizationState update)
     {

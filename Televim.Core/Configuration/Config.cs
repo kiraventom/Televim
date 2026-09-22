@@ -1,6 +1,6 @@
 namespace Televim.Core.Configuration;
 
-public record Config
+internal record Config
 {
     public required TDLibConfig TDLib { get; init; }
     public ConnectionConfig Connection { get; init; }
@@ -11,7 +11,7 @@ public record Config
     }
 }
 
-public record TDLibConfig
+internal record TDLibConfig
 {
     public required int ApiId { get; init; }
     public required string ApiHash { get; init; }
@@ -23,7 +23,7 @@ public record TDLibConfig
     public string SystemVersion { get; init; }
 }
 
-public record ConnectionConfig
+internal record ConnectionConfig
 {
     public string ProxyAddress { get; init; }
 }

@@ -4,7 +4,7 @@ using Televim.Core.Telegram.Updates;
 
 namespace Televim.Core.Telegram;
 
-public class TelegramClient : ITelegramClient
+internal class TelegramClient : ITelegramClient
 {
     private TdClient Client { get; }
     private IUpdateRouter UpdateRouter { get; }
