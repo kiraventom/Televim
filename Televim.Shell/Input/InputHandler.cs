@@ -1,11 +1,12 @@
 using System.Text;
 using Avalonia.Input;
 using Televim.Core.Events;
+using Televim.Core.Utils;
 using Televim.Shell.Input.Commands;
 
 namespace Televim.Shell.Input;
 
-internal class InputHandler : IInputHandler
+internal class InputHandler : ChannelHandler<ICommand>, IInputHandler
 {
     private readonly StringBuilder _buffer = new();
     private readonly IEventService _eventService;
@@ -19,7 +20,7 @@ internal class InputHandler : IInputHandler
         _commandService = commandService;
     }
 
-    public async Task Handle(KeyEventArgs input)
+    public void Handle(KeyEventArgs input)
     {
         if (input.KeyModifiers.HasFlag(KeyModifiers.Control))
             _buffer.Append(IInputHandler.CTRL_SEQUENCE);
@@ -30,7 +31,7 @@ internal class InputHandler : IInputHandler
         if (input.KeyModifiers.HasFlag(KeyModifiers.Meta))
             _buffer.Append(IInputHandler.META_SEQUENCE);
 
-        if (input.KeyModifiers.HasFlag(KeyModifiers.Meta) && input.KeySymbol is null)
+        if (input.KeyModifiers.HasFlag(KeyModifiers.Shift) && input.KeySymbol is null)
             _buffer.Append(IInputHandler.SHIFT_SEQUENCE);
 
         var str = input.KeySymbol ?? Enum.GetName<Key>(input.Key);
@@ -53,10 +54,12 @@ internal class InputHandler : IInputHandler
 
             case CommandCheckResult.MATCH:
                 _buffer.Clear();
-                await _eventService.Raise(new CommandDetectedEvent(command));
                 input.Handled = true;
+                Receive(command);
                 break;
         }
     }
+
+    protected override Task Handle(ICommand command) => _eventService.Raise(command);
 }
 

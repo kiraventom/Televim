@@ -6,5 +6,3 @@ internal interface IInputListener
 {
     void OnKeyDown(KeyEventArgs e);
 }
-
-

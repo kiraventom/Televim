@@ -10,7 +10,6 @@ internal interface IInputHandler
     const string META_SEQUENCE = ESCAPE_CHAR + "M";
     const string SHIFT_SEQUENCE = ESCAPE_CHAR + "S";
 
-    Task Handle(KeyEventArgs input);
+    void Handle(KeyEventArgs input);
 }
-
 

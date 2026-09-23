@@ -27,9 +27,14 @@ internal class CommandInput
             var c = rawInput[i];
 
             if (nonDigitFound || !char.IsDigit(c))
+            {
                 textSb.Append(c);
+                nonDigitFound = true;
+            }
             else
+            {
                 numberSb.Append(c);
+            }
         }
 
         var numberStr = numberSb.ToString();
