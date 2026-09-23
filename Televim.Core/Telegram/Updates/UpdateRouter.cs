@@ -1,71 +1,33 @@
-using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using TdLib;
 using Televim.Core.Telegram.Updates.Handlers;
+using Televim.Core.Utils;
 
 namespace Televim.Core.Telegram.Updates;
 
-internal class UpdateRouter : IAsyncDisposable, IUpdateRouter
+internal class UpdateRouter(ILogger<UpdateRouter> logger, IServiceProvider sp) : ChannelHandler<TdApi.Update>, IUpdateRouter
 {
-    private readonly Channel<TdApi.Update> _channel;
-    private readonly Task _loop;
-    private readonly CancellationTokenSource _cts = new();
-    private readonly IServiceProvider _sp;
+    public void Route(TdApi.Update update) => Receive(update);
 
-    private ILogger<UpdateRouter> Logger { get; }
-
-    public UpdateRouter(ILogger<UpdateRouter> logger, IServiceProvider sp)
+    protected override async Task Handle(TdApi.Update update)
     {
-        Logger = logger;
-
-        _sp = sp;
-        _channel = Channel.CreateUnbounded<TdApi.Update>(new() { SingleReader = true });
-        _loop = Task.Run(() => Run(_cts.Token));
-    }
-
-    public void Route(TdApi.Update update)
-    {
-        _channel.Writer.TryWrite(update);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        _cts.Cancel();
-        _channel.Writer.TryComplete();
+        var updateType = update.GetType();
 
         try
         {
-            await _loop;
-        }
-        catch (OperationCanceledException)
-        {
-        }
-
-        _cts.Dispose();
-    }
-
-    private async Task Run(CancellationToken ct)
-    {
-        await foreach (var update in _channel.Reader.ReadAllAsync(ct))
-        {
-            var updateType = update.GetType();
-
-            try
+            var updateHandlerType = typeof(IUpdateHandler<>).MakeGenericType(update.GetType());
+            var service = sp.GetService(updateHandlerType);
+            if (service is not IUpdateHandler handler)
             {
-                var updateHandlerType = typeof(IUpdateHandler<>).MakeGenericType(update.GetType());
-                var service = _sp.GetService(updateHandlerType);
-                if (service is not IUpdateHandler handler)
-                {
-                    Logger.LogTrace("No handler registered for update type \"{type}\"", updateType.FullName);
-                    continue;
-                }
+                logger.LogTrace("No handler registered for update type \"{type}\"", updateType.FullName);
+                return;
+            }
 
-                await handler.Handle(update);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Exception thrown during handling update of type \"{type}\": {ex}", updateType.FullName, ex);
-            }
+            await handler.Handle(update);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Exception thrown during handling update of type \"{type}\": {ex}", updateType.FullName, ex);
         }
     }
 }
