@@ -1,6 +1,6 @@
 namespace Televim.Core.Events;
 
-internal interface IEventService
+public interface IEventService
 {
     Task Raise<T> (T @event);
 }

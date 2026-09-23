@@ -1,6 +1,6 @@
 namespace Televim.Core.Events;
 
-internal interface IEventTarget<T>
+public interface IEventTarget<T>
 {
     Task Handle(T @event);
 }
