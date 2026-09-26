@@ -16,3 +16,4 @@ internal class MoveToTopCommand(ILogger<MoveToTopCommand> logger) : Command
         return Task.CompletedTask;
     }
 }
+

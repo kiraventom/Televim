@@ -18,15 +18,15 @@ internal class CommandService : ICommandService
         _checkers = _factory.Definitions.Select(d => new CommandDefinitionChecker(d)).ToList();
     }
 
-    public CommandCheckResult TryGetCommand(string input, out ICommand command)
+    public CommandCheckResult TryGetCommand(CommandInput input, out ICommand command)
     {
         command = null;
 
         var results = _checkers.Select(c => new 
         { 
             Checker = c, 
-            MatchResult = c.TryMatch(input, out var commandInput), 
-            CommandInput = commandInput 
+            MatchResult = c.TryMatch(input), 
+            CommandInput = input 
         }).ToList();
 
         var matches = results.Count(r => r.MatchResult == CommandCheckResult.MATCH);
@@ -51,10 +51,10 @@ internal class CommandService : ICommandService
 
         var matchedCommands = results
             .Where(r => r.MatchResult == CommandCheckResult.MATCH)
-            .Select(r => r.Checker.Definition.Text)
-            .Select(t => $"\"{t}\"");
+            .Select(r => r.Checker.Definition.Notation)
+            .Select(n => $"\"{n}\"");
 
-        _logger.LogError("Input \"{input}\" matches to multiple commands: {commands}. Ignoring", input, string.Join(", ", matchedCommands));
+        _logger.LogError("Input matches to multiple commands: {commands}. Ignoring", string.Join(", ", matchedCommands));
 
         return CommandCheckResult.NO_MATCH;
     }

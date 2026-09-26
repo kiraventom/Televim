@@ -1,4 +1,3 @@
-using System.Text;
 using Avalonia.Input;
 using Televim.Core.Events;
 using Televim.Core.Utils;
@@ -8,37 +7,25 @@ namespace Televim.Shell.Input;
 
 internal class InputHandler : ChannelHandler<ICommand>, IInputHandler
 {
-    private readonly StringBuilder _buffer = new();
+    private readonly List<KeyStroke> _buffer = [];
     private readonly IEventService _eventService;
     private readonly ICommandService _commandService;
+    private readonly ICommandInputBuilder _inputBuilder;
 
-    public InputMode CurrentMode { get; private set; } = InputMode.NORMAL;
-
-    public InputHandler(IEventService eventService, ICommandService commandService)
+    public InputHandler(IEventService eventService, ICommandService commandService, ICommandInputBuilder inputBuilder)
     {
         _eventService = eventService;
+        _inputBuilder = inputBuilder;
         _commandService = commandService;
     }
 
-    public void Handle(KeyEventArgs input)
+    public void Handle(KeyEventArgs e)
     {
-        if (input.KeyModifiers.HasFlag(KeyModifiers.Control))
-            _buffer.Append(IInputHandler.CTRL_SEQUENCE);
+        var keyStroke = KeyStroke.From(e);
+        _buffer.Add(keyStroke);
 
-        if (input.KeyModifiers.HasFlag(KeyModifiers.Alt))
-            _buffer.Append(IInputHandler.ALT_SEQUENCE);
-
-        if (input.KeyModifiers.HasFlag(KeyModifiers.Meta))
-            _buffer.Append(IInputHandler.META_SEQUENCE);
-
-        if (input.KeyModifiers.HasFlag(KeyModifiers.Shift) && input.KeySymbol is null)
-            _buffer.Append(IInputHandler.SHIFT_SEQUENCE);
-
-        var str = input.KeySymbol ?? Enum.GetName<Key>(input.Key);
-        _buffer.Append(str);
-
-        var fullText = _buffer.ToString();
-        var result = _commandService.TryGetCommand(fullText, out var command);
+        var input = _inputBuilder.Build(_buffer);
+        var result = _commandService.TryGetCommand(_buffer, out var command);
 
         switch (result)
         {
@@ -48,13 +35,13 @@ internal class InputHandler : ChannelHandler<ICommand>, IInputHandler
                 break;
 
             case CommandCheckResult.PARTIAL_MATCH:
-                input.Handled = true;
+                e.Handled = true;
                 // Do not clear the buffer
                 break;
 
             case CommandCheckResult.MATCH:
                 _buffer.Clear();
-                input.Handled = true;
+                e.Handled = true;
                 Receive(command);
                 break;
         }
