@@ -12,6 +12,7 @@
 
 <TextBlock 
     Text="{Binding Buffer}"
+    Foreground="Black"
     HorizontalAlignment="Center"
     VerticalAlignment="Center" />
 </Window>
