@@ -8,8 +8,8 @@ public readonly record struct ConfigChangedEvent(Config Config);
 internal readonly record struct InvalidJsonEvent(JsonException Exception);
 internal readonly record struct ConfigReadFailEvent(Exception Exception);
 internal readonly record struct ConfigWriteFailEvent(Exception Exception);
-internal readonly record struct DefaultConfigGeneratedEvent(string ConfigFilePath);
-internal readonly record struct DefaultConfigDetectedEvent(string ConfigFilePath, params string[] PropsToChange);
+public readonly record struct DefaultConfigGeneratedEvent(string ConfigFilePath);
+public readonly record struct DefaultConfigDetectedEvent(string ConfigFilePath, params string[] PropsToChange);
 
 // TODO: Move to FileWatcher, call ConfigChangedEvent, ditch GetCurrent()
 internal class ConfigService : IConfigService

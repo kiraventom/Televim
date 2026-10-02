@@ -54,7 +54,7 @@ internal static class Program
         try
         {
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            AppHost.Run();
+            // AppHost.Run();
         }
         catch (Exception ex)
         {

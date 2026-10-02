@@ -24,55 +24,69 @@ public static class CoreServicesRegister
             .AddSingleton<TdClient>(ConfigureTdClient)
             .AddSingleton<ITelegramClient, TelegramClient>();
 
-        RegisterGenericImplementations(services, typeof(IUpdateHandler<>), (c, i, t) => c.AddTransient(i, t));
-
-        services.AddHostedService<AppService>();
+        RegisterGenericImplementations(services, typeof(IUpdateHandler<>), (c, i, t) => { foreach (var @interface in i) c.AddTransient(@interface, t); } );
 
         return services;
     }
 
     public static IServiceCollection RegisterEventTargets(this IServiceCollection services)
     {
-        RegisterGenericImplementations(services, typeof(IEventTarget<>), (c, i, t) =>
+        RegisterGenericImplementations(services, typeof(IEventTarget<>), (collection, eventTargetInterfaces, concreteType) =>
         {
-            var eventType = i.GetGenericArguments().Single();
-
             // Let's check if this type is already registered
-            var typeDescriptor = services.FirstOrDefault(d => d.ServiceType == t);
+            var typeDescriptor = services.FirstOrDefault(d => d.ServiceType == concreteType);
             if (typeDescriptor is not null)
             {
-                services.AddSingleton(i, sp => sp.GetRequiredService(t));
-                Log.Debug("Registered {Type} as IEventTarget<{Event}>", t.Name, eventType.Name);
+                if (typeDescriptor.Lifetime != ServiceLifetime.Singleton)
+                {
+                    Log.Fatal("Can't register {Type} as IEventTarget: it's {Lifetime}, not a Singleton", concreteType, Enum.GetName<ServiceLifetime>(typeDescriptor.Lifetime));
+                    throw new NotSupportedException();
+                }
+
+                foreach (var eventTargetInterface in eventTargetInterfaces)
+                {
+                    services.AddSingleton(eventTargetInterface, sp => sp.GetRequiredService(concreteType));
+                    Log.Information("Registered {Type} as IEventTarget<{Event}>", concreteType, eventTargetInterface.GetGenericArguments().First());
+                }
+
                 return;
             }
 
-            var interfaces = t.GetInterfaces().Where(ifc => !ifc.IsGenericType || ifc.GetGenericTypeDefinition() != typeof(IEventTarget<>));
+            var interfaces = concreteType.GetInterfaces().Where(ifc => !ifc.IsGenericType || ifc.GetGenericTypeDefinition() != typeof(IEventTarget<>));
             foreach (var @interface in interfaces)
             {
                 var interfaceDescriptors = services.Where(d => d.ServiceType == @interface).Where(d => !d.IsKeyedService);
                 if (interfaceDescriptors.Count() > 1)
                 {
-                    Log.Warning("Trying to register type {Type} as IEventTarget<{EventType}>: Can't use {Interface} because {Type} is not the only implementation",
-                            t.Name, eventType.Name, @interface.Name, t.Name);
+                    Log.Warning("Trying to register type {Type} as IEventTarget<>: Can't use {Interface} because {Type} is not the only implementation", concreteType, @interface, concreteType);
                     continue;
                 }
 
                 var interfaceDescriptor = interfaceDescriptors.SingleOrDefault();
                 if (interfaceDescriptor is not null)
                 {
-                    services.AddSingleton(i, sp => sp.GetRequiredService(interfaceDescriptor.ServiceType));
-                    Log.Debug("Registered {Type} as IEventTarget<{Event}>", interfaceDescriptor.ServiceType.Name, eventType.Name);
+                    if (interfaceDescriptor.Lifetime != ServiceLifetime.Singleton)
+                    {
+                        Log.Fatal("Can't register {Type} as IEventTarget<>: it's {Lifetime}, not a Singleton", interfaceDescriptor.ServiceType, Enum.GetName<ServiceLifetime>(interfaceDescriptor.Lifetime));
+                        throw new NotSupportedException();
+                    }
+
+                    foreach (var eventTargetInterface in eventTargetInterfaces)
+                    {
+                        services.AddSingleton(eventTargetInterface, sp => sp.GetRequiredService(interfaceDescriptor.ServiceType));
+                        Log.Information("Registered {Type} as IEventTarget<{Event}>", interfaceDescriptor.ServiceType, eventTargetInterface.GetGenericArguments().First());
+                    }
                     return;
                 }
             }
 
-            Log.Error("Type {Type} seems not to be registered. Is {Method} called last?", t.Name, nameof(RegisterEventTargets));
+            Log.Error("Type {Type} seems not to be registered. Is {Method} called after all services were registered?", concreteType, nameof(RegisterEventTargets));
         });
 
         return services;
     }
 
-    private static void RegisterGenericImplementations(IServiceCollection collection, Type genericInterface, Action<IServiceCollection, Type, Type> register)
+    private static void RegisterGenericImplementations(IServiceCollection collection, Type genericInterface, Action<IServiceCollection, IEnumerable<Type>, Type> register)
     {
         if (!genericInterface.IsGenericType)
             throw new NotSupportedException($"Type {genericInterface.FullName} is not generic");
@@ -88,10 +102,7 @@ public static class CoreServicesRegister
                 .Where(i => i.IsGenericType)
                 .Where(i => i.GetGenericTypeDefinition() == genericInterface);
 
-            foreach (var @implementedInterface in implemented)
-            {
-                register(collection, @implementedInterface, @class);
-            }
+            register(collection, implemented, @class);
         }
     }
 

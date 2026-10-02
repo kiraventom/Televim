@@ -23,7 +23,8 @@ internal static class ShellServicesRegister
             .AddSingleton<ICommandFactory, CommandFactory>(sp => BuildFactory(sp, definitions.Values.ToList()))
             .AddSingleton<IInputModeHolder, InputModeHolder>()
             .AddSingleton<IMainViewModel, MainViewModel>()
-            .AddSingleton<MainWindow>();
+            .AddSingleton<MainWindow>()
+            .AddSingleton<App>();
 
         RegisterCommands(services, definitions.Keys);
 
