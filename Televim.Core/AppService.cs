@@ -4,7 +4,7 @@ using Televim.Core.Events;
 
 namespace Televim.Core;
 
-internal class AppService() : BackgroundService, 
+internal class AppService(IHostApplicationLifetime lifetime) : BackgroundService, 
     IEventTarget<DefaultConfigGeneratedEvent>,
     IEventTarget<DefaultConfigDetectedEvent>
 {
@@ -23,12 +23,10 @@ internal class AppService() : BackgroundService,
     {
         // TODO Possibly replace
         Console.Error.WriteLine($"Default config detected at {@event.ConfigFilePath}"); 
-        Console.WriteLine($"{Program.PROJECT_NAME} requires following properties to be specified: {string.Join(", ", @event.PropsToChange)}.");
+        Console.WriteLine($"{CoreServicesRegister.PROJECT_NAME} requires following properties to be specified: {string.Join(", ", @event.PropsToChange)}.");
         Console.WriteLine("Exiting...");
 
-        using var cts = new CancellationTokenSource();
-        cts.CancelAfter(TimeSpan.FromSeconds(5));
-        await StopAsync(cts.Token);
+        lifetime.StopApplication();
     }
 }
 

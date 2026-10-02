@@ -1,0 +1,17 @@
+<Window 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="Televim.Shell.Views.MainWindow"
+    xmlns:vm="using:Televim.Shell.ViewModels"
+    x:DataType="vm:IMainViewModel"
+    Title="Televim"
+    Width="800" Height="600"
+    Focusable="True"
+    Background="White"
+    Opened="OnOpened">
+
+<TextBlock 
+    Text="{Binding Buffer}"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center" />
+</Window>

@@ -10,6 +10,7 @@ internal class InsertModeCommand(ILogger<InsertModeCommand> logger, IEventServic
 {
     public override async Task Execute()
     {
+        logger.LogTrace("Switched to insert mode");
         await eventService.Raise(new InputModeSetRequestedEvent(InputMode.INSERT));
     }
 }

@@ -10,10 +10,10 @@ internal static class KeyNotation
         var result = new List<KeyStroke>();
         for (int i = 0; i < notation.Length;)
         {
-            var ch = notation[i].ToString();
-            if (ch != "<")
+            var ch = notation[i];
+            if (ch != '<')
             {
-                result.Add(new KeyStroke(ParseKey(ch), KeyModifiers.None, ch));
+                result.Add(new KeyStroke(ParseKey(ch.ToString()), KeyModifiers.None, ch));
                 i++;
                 continue;
             }

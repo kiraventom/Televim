@@ -4,12 +4,14 @@ using Televim.Core.Events;
 
 namespace Televim.Core.Configuration;
 
-internal readonly record struct InvalidJsonEvent(JsonException ex);
-internal readonly record struct ConfigReadFailEvent(Exception ex);
-internal readonly record struct ConfigWriteFailEvent(Exception ex);
+public readonly record struct ConfigChangedEvent(Config Config);
+internal readonly record struct InvalidJsonEvent(JsonException Exception);
+internal readonly record struct ConfigReadFailEvent(Exception Exception);
+internal readonly record struct ConfigWriteFailEvent(Exception Exception);
 internal readonly record struct DefaultConfigGeneratedEvent(string ConfigFilePath);
 internal readonly record struct DefaultConfigDetectedEvent(string ConfigFilePath, params string[] PropsToChange);
 
+// TODO: Move to FileWatcher, call ConfigChangedEvent, ditch GetCurrent()
 internal class ConfigService : IConfigService
 {
     private const string CONFIG_FILENAME = "config.json";

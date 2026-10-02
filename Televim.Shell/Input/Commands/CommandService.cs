@@ -6,7 +6,6 @@ internal class CommandService : ICommandService
 {
     private readonly ILogger<CommandService> _logger;
     private readonly ICommandFactory _factory;
-    private readonly IServiceProvider _sp;
 
     private readonly IReadOnlyCollection<CommandDefinitionChecker> _checkers;
 
@@ -41,7 +40,7 @@ internal class CommandService : ICommandService
 
         if (matches == 1)
         {
-            var result = results.Single();
+            var result = results.Single(r => r.MatchResult == CommandCheckResult.MATCH);
             command = _factory.Build(result.Checker.Definition);
             if (command is IInitableCommand initable)
                 initable.Init(result.CommandInput);

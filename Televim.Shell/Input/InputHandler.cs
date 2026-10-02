@@ -5,6 +5,8 @@ using Televim.Shell.Input.Commands;
 
 namespace Televim.Shell.Input;
 
+internal readonly record struct BufferChangedEvent(string Buffer);
+
 internal class InputHandler : ChannelHandler<ICommand>, IInputHandler
 {
     private readonly List<KeyStroke> _buffer = [];
@@ -25,7 +27,7 @@ internal class InputHandler : ChannelHandler<ICommand>, IInputHandler
         _buffer.Add(keyStroke);
 
         var input = _inputBuilder.Build(_buffer);
-        var result = _commandService.TryGetCommand(_buffer, out var command);
+        var result = _commandService.TryGetCommand(input, out var command);
 
         switch (result)
         {
@@ -45,8 +47,10 @@ internal class InputHandler : ChannelHandler<ICommand>, IInputHandler
                 Receive(command);
                 break;
         }
+
+        _eventService.Raise(new BufferChangedEvent(string.Join(string.Empty, _buffer.Select(k => k.Char?.ToString() ?? "<null>"))));
     }
 
-    protected override Task Handle(ICommand command) => _eventService.Raise(command);
+    protected override Task Handle(ICommand command) => command.Execute();
 }
 

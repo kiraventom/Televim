@@ -1,9 +1,10 @@
 namespace Televim.Core.Configuration;
 
-internal record Config
+public record Config
 {
     public required TDLibConfig TDLib { get; init; }
     public ConnectionConfig Connection { get; init; }
+    public InputConfig Input { get; init; }
 
     public bool IsDefault()
     {
@@ -11,7 +12,7 @@ internal record Config
     }
 }
 
-internal record TDLibConfig
+public record TDLibConfig
 {
     public required int ApiId { get; init; }
     public required string ApiHash { get; init; }
@@ -23,7 +24,12 @@ internal record TDLibConfig
     public string SystemVersion { get; init; }
 }
 
-internal record ConnectionConfig
+public record ConnectionConfig
 {
     public string ProxyAddress { get; init; }
+}
+
+public record InputConfig
+{
+    public IReadOnlyDictionary<string, string> KeyBinds { get; init; }
 }
