@@ -5,16 +5,16 @@ namespace Televim.Shell.Input.Commands;
 internal class CommandService : ICommandService
 {
     private readonly ILogger<CommandService> _logger;
-    private readonly ICommandFactory _factory;
+    private readonly ICommandFactory _commandFactory;
 
-    private readonly IReadOnlyCollection<CommandDefinitionChecker> _checkers;
+    private readonly IReadOnlyCollection<ICommandDefinitionChecker> _checkers;
 
-    public CommandService(ILogger<CommandService> logger, ICommandFactory factory)
+    public CommandService(ILogger<CommandService> logger, ICommandFactory commandFactory, ICommandDefinitionCheckerFactory checkerFactory)
     {
         _logger = logger;
-        _factory = factory;
+        _commandFactory = commandFactory;
 
-        _checkers = _factory.Definitions.Select(d => new CommandDefinitionChecker(d)).ToList();
+        _checkers = _commandFactory.Definitions.Select(d => checkerFactory.Build(d)).ToList();
     }
 
     public CommandCheckResult TryGetCommand(CommandInput input, out ICommand command)
@@ -41,7 +41,7 @@ internal class CommandService : ICommandService
         if (matches == 1)
         {
             var result = results.Single(r => r.MatchResult == CommandCheckResult.MATCH);
-            command = _factory.Build(result.Checker.Definition);
+            command = _commandFactory.Build(result.Checker.Definition);
             if (command is IInitableCommand initable)
                 initable.Init(result.CommandInput);
 

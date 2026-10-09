@@ -18,6 +18,7 @@ internal static class ShellServicesRegister
         services
             .AddSingleton<IInputListener, InputListener>()
             .AddSingleton<IInputHandler, InputHandler>()
+            .AddSingleton<ICommandDefinitionCheckerFactory, CommandDefinitionCheckerFactory>()
             .AddSingleton<ICommandService, CommandService>()
             .AddSingleton<ICommandInputBuilder, CommandInputBuilder>()
             .AddSingleton<ICommandFactory, CommandFactory>(sp => BuildFactory(sp, definitions.Values.ToList()))

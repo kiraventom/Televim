@@ -1,11 +1,27 @@
+using Microsoft.Extensions.Logging;
 using Televim.Core.Events;
-using Televim.Shell.Input.Commands.Normal;
 
 namespace Televim.Shell.Input;
 
-internal class InputModeHolder : IInputModeHolder, IEventTarget<InputModeSetRequestedEvent>
+internal class InputModeHolder(ILogger<InputModeHolder> logger) : IInputModeHolder, IEventTarget<InputModeSetRequestedEvent>
 {
-    public InputMode CurrentMode { get; private set; }
+    public InputModes CurrentMode 
+    {
+        get
+        {
+            if (field == InputModes.INVALID)
+                logger.LogError("{Property} is set to {Value}, application is not expected to work properly", nameof(CurrentMode), Enum.GetName(field));
+
+            return field;
+        }
+        private set
+        {
+            if (value == InputModes.INVALID)
+                logger.LogError("Setting {Property} to {Value}, application is not expected to work properly", nameof(CurrentMode), Enum.GetName(field));
+
+            field = value;
+        }
+    } = InputModes.NORMAL;
 
     public Task Handle(InputModeSetRequestedEvent @event)
     {

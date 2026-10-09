@@ -19,9 +19,14 @@ internal class CommandInputBuilder(IInputModeHolder inputModeHolder) : ICommandI
             var keyStroke = keyStrokes[i];
 
             if (bodyStart < 0 && keyStroke.IsDigit)
+            {
                 numberSb.Append(keyStroke.Char);
+            }
             else
+            {
                 bodyStart = i;
+                break;
+            }
         }
 
         var numberStr = numberSb.ToString();

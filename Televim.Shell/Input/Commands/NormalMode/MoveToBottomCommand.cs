@@ -1,17 +1,17 @@
 using Microsoft.Extensions.Logging;
 
-namespace Televim.Shell.Input.Commands.Normal;
+namespace Televim.Shell.Input.Commands.NormalMode;
 
-[CommandDefinition("G", InputMode.NORMAL, AllowNumberPrefix = true)]
+[CommandDefinition("G", InputModes.NORMAL, AllowNumberPrefix = true)]
 internal class MoveToBottomCommand(ILogger<MoveToBottomCommand> logger) : Command
 {
     public override Task Execute()
     {
         // TEMP
         if (Input.NumberPrefix == 0)
-            logger.LogInformation("Move to bottom received");
+            logger.LogInformation("Moved to bottom");
         else
-            logger.LogInformation("Move to line {number} received", Input.NumberPrefix);
+            logger.LogInformation("Moved to line {number}", Input.NumberPrefix);
 
         return Task.CompletedTask;
     }

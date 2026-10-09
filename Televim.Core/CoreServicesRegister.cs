@@ -46,7 +46,7 @@ public static class CoreServicesRegister
                 foreach (var eventTargetInterface in eventTargetInterfaces)
                 {
                     services.AddSingleton(eventTargetInterface, sp => sp.GetRequiredService(concreteType));
-                    Log.Information("Registered {Type} as IEventTarget<{Event}>", concreteType, eventTargetInterface.GetGenericArguments().First());
+                    Log.Debug("Registered {Type} as IEventTarget<{Event}>", concreteType, eventTargetInterface.GetGenericArguments().First());
                 }
 
                 return;
@@ -74,7 +74,7 @@ public static class CoreServicesRegister
                     foreach (var eventTargetInterface in eventTargetInterfaces)
                     {
                         services.AddSingleton(eventTargetInterface, sp => sp.GetRequiredService(interfaceDescriptor.ServiceType));
-                        Log.Information("Registered {Type} as IEventTarget<{Event}>", interfaceDescriptor.ServiceType, eventTargetInterface.GetGenericArguments().First());
+                        Log.Debug("Registered {Type} as IEventTarget<{Event}>", interfaceDescriptor.ServiceType, eventTargetInterface.GetGenericArguments().First());
                     }
                     return;
                 }
