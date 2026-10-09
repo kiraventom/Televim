@@ -4,5 +4,3 @@ internal interface IInputModeHolder
 {
     InputModes CurrentMode { get; }
 }
-
-

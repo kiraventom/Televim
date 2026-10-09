@@ -1,7 +1,7 @@
 namespace Televim.Shell.Input;
 
 [Flags]
-internal enum InputModes 
+public enum InputModes 
 { 
     INVALID = 0x0,
     NORMAL = 0x1,

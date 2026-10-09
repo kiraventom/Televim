@@ -7,12 +7,27 @@
     Title="Televim"
     Width="800" Height="600"
     Focusable="True"
-    Background="White"
     Opened="OnOpened">
 
+<Grid>
+    <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <TextBox
+        Grid.Row="0"
+        Name="InputTextBox"
+        IsEnabled="{Binding IsInsertMode}"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Center"
+        Margin="5,0"/>
+
 <TextBlock 
+    Grid.Row="1"
     Text="{Binding Buffer}"
-    Foreground="Black"
     HorizontalAlignment="Center"
     VerticalAlignment="Center" />
+</Grid>
+
 </Window>
