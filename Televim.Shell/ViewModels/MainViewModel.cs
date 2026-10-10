@@ -5,21 +5,17 @@ using Televim.Shell.Input;
 
 namespace Televim.Shell.ViewModels;
 
-internal class MainViewModel(ILogger<MainViewModel> logger, IInputListener listener) 
+internal class MainViewModel(ILogger<MainViewModel> logger, IInputListener listener, IInputModeHolder inputModeHolder) 
     : BasePropertyChanged(logger), 
     IMainViewModel, 
-    IEventTarget<BufferChangedEvent>, 
+    IEventTarget<ActionBufferChangedEvent>, 
     IEventTarget<InputModeChangedEvent>
 {
     public event Action<InputModes> InputModeChanged;
 
-    public InputModes CurrentInputMode 
-    {
-    	get => field;
-    	private set => SetAndRaise(ref field, value);
-    }
+    public InputModes CurrentInputMode => inputModeHolder.CurrentMode;
 
-    public string Buffer 
+    public string ActionBuffer 
     { 
         get => field;
         private set => SetAndRaise(ref field, value);
@@ -33,15 +29,15 @@ internal class MainViewModel(ILogger<MainViewModel> logger, IInputListener liste
 
     public void OnKeyDown(KeyEventArgs e) => listener.OnKeyDown(e);
 
-    public Task Handle(BufferChangedEvent @event)
+    public Task Handle(ActionBufferChangedEvent @event)
     {
-        Buffer = @event.Buffer;
+        ActionBuffer = @event.Buffer;
         return Task.CompletedTask;
     }
 
     public Task Handle(InputModeChangedEvent @event)
     {
-        CurrentInputMode = @event.InputMode;
+        RaisePropertyChanged(nameof(CurrentInputMode));
         InputModeChanged?.Invoke(@event.InputMode);
         return Task.CompletedTask;
     }

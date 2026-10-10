@@ -5,7 +5,7 @@ using Televim.Shell.Input;
 
 namespace Televim.Shell.Views.Converters;
 
-internal class InputModeConverter(InputModes mode) : MarkupExtension, IValueConverter
+internal class InputModeToBoolConverter(InputModes mode) : MarkupExtension, IValueConverter
 {
     public override object ProvideValue(IServiceProvider serviceProvider) => this;
 

@@ -1,13 +1,13 @@
 using Avalonia.Input;
 using Microsoft.Extensions.Logging;
 using Televim.Core.Events;
-using Televim.Shell.Input.Commands;
+using Televim.Shell.Input.Actions;
 
 namespace Televim.Shell.Input;
 
-internal readonly record struct BufferChangedEvent(string Buffer);
+internal readonly record struct ActionBufferChangedEvent(string Buffer);
 
-internal class KeyPressHandler(ILogger<KeyPressHandler> logger, IEventService eventService, ICommandInputBuilder inputBuilder, ICommandInputHandler inputHandler) : IKeyPressHandler
+internal class KeyPressHandler(ILogger<KeyPressHandler> logger, IEventService eventService, IActionInputBuilder inputBuilder, IActionInputHandler inputHandler) : IKeyPressHandler
 {
     private readonly List<KeyStroke> _buffer = [];
 
@@ -24,7 +24,7 @@ internal class KeyPressHandler(ILogger<KeyPressHandler> logger, IEventService ev
         _buffer.Add(keyStroke);
         logger.LogDebug("Current buffer state: {{ {buffer} }}", string.Join(", ", _buffer.Select((k, i) => $"[{i}] = {k}")));
 
-        // Don't try the commands if we're entering the prefix
+        // TODO: Write starting digits into separate buffer and only in normal mode
         if (_buffer.All(k => k.IsDigit))
             return;
 
@@ -39,7 +39,7 @@ internal class KeyPressHandler(ILogger<KeyPressHandler> logger, IEventService ev
         if (!SkipBufferClear)
             _buffer.Clear();
 
-        eventService.Raise(new BufferChangedEvent(string.Join(string.Empty, _buffer.Select(k => k.Char?.ToString() ?? "<null>"))));
+        eventService.Raise(new ActionBufferChangedEvent(string.Join(string.Empty, _buffer.Select(k => k.Char?.ToString() ?? "<null>"))));
 
     }
 }

@@ -7,7 +7,7 @@ public interface IMainViewModel
 {
     event Action<InputModes> InputModeChanged;
     InputModes CurrentInputMode { get; }
-    string Buffer { get; }
+    string ActionBuffer { get; }
     string CommandText { get; set; }
     void OnKeyDown(KeyEventArgs e);
 }

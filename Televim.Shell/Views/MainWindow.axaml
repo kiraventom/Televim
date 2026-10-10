@@ -71,7 +71,7 @@
     <TextBox 
         Grid.Column="1"
         IsEnabled="False"
-        Text="{Binding Buffer}"
+        Text="{Binding ActionBuffer}"
         TextAlignment="Right" />
     </Grid>
 
