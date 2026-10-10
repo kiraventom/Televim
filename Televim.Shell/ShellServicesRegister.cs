@@ -17,7 +17,8 @@ internal static class ShellServicesRegister
 
         services
             .AddSingleton<IInputListener, InputListener>()
-            .AddSingleton<IInputHandler, InputHandler>()
+            .AddSingleton<ICommandInputHandler, CommandInputHandler>()
+            .AddSingleton<IKeyPressHandler, KeyPressHandler>()
             .AddSingleton<ICommandDefinitionCheckerFactory, CommandDefinitionCheckerFactory>()
             .AddSingleton<ICommandService, CommandService>()
             .AddSingleton<ICommandInputBuilder, CommandInputBuilder>()

@@ -6,7 +6,8 @@ namespace Televim.Shell.ViewModels;
 public interface IMainViewModel
 {
     event Action<InputModes> InputModeChanged;
-    bool IsInsertMode { get; } // TODO Temp
+    InputModes CurrentInputMode { get; }
     string Buffer { get; }
+    string CommandText { get; set; }
     void OnKeyDown(KeyEventArgs e);
 }

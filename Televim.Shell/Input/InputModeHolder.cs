@@ -3,7 +3,7 @@ using Televim.Core.Events;
 
 namespace Televim.Shell.Input;
 
-internal class InputModeHolder(ILogger<InputModeHolder> logger, IEventService eventService) : IInputModeHolder, IEventTarget<InputModeSetRequestedEvent>
+internal class InputModeHolder(ILogger<InputModeHolder> logger, IEventService eventService) : IInputModeHolder, IEventTarget<InputModeRequestedEvent>
 {
     public InputModes CurrentMode 
     {
@@ -23,7 +23,7 @@ internal class InputModeHolder(ILogger<InputModeHolder> logger, IEventService ev
         }
     } = InputModes.NORMAL;
 
-    public async Task Handle(InputModeSetRequestedEvent @event)
+    public async Task Handle(InputModeRequestedEvent @event)
     {
         CurrentMode = @event.InputMode;
         await eventService.Raise(new InputModeChangedEvent(CurrentMode));

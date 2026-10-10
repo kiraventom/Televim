@@ -8,7 +8,7 @@ internal class InsertModeCommand(ILogger<InsertModeCommand> logger, IEventServic
 {
     public override async Task Execute()
     {
-        await eventService.Raise(new InputModeSetRequestedEvent(InputModes.INSERT));
+        await eventService.Raise(new InputModeRequestedEvent(InputModes.INSERT));
         logger.LogDebug("Switched to insert mode");
     }
 }

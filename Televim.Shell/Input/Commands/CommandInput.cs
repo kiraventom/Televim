@@ -2,7 +2,7 @@ using Televim.Core.Utils;
 
 namespace Televim.Shell.Input.Commands;
 
-internal record CommandInput(IReadOnlyList<KeyStroke> KeyStrokes, int NumberPrefix, InputModes Mode)
+public record CommandInput(IReadOnlyList<KeyStroke> KeyStrokes, int NumberPrefix, InputModes Mode)
 {
     public override string ToString()
     {
