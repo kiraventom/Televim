@@ -23,6 +23,11 @@ internal class InputModeHolder(ILogger<InputModeHolder> logger, IEventService ev
         }
     } = InputModes.NORMAL;
 
+    public bool CurrentModeSupportsPrefixes()
+    {
+        return CurrentMode is InputModes.NORMAL or InputModes.VISUAL;
+    }
+
     public async Task Handle(InputModeRequestedEvent @event)
     {
         CurrentMode = @event.InputMode;

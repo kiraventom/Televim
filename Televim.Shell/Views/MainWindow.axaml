@@ -33,7 +33,7 @@
         Name="InsertTextBox"
         AcceptsTab="True"
         AcceptsReturn="True"
-        IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeConverter INSERT}}"
+        IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter INSERT}}"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Center"
         Margin="5,0"/>
@@ -48,7 +48,7 @@
     <TextBlock
         Grid.Column="0"
         Classes="commandPrompt"
-        Classes.visible="{Binding CurrentInputMode, Converter={conv:InputModeConverter COMMAND}}"
+        Classes.visible="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter COMMAND}}"
         Visual.ZIndex="1"
         HorizontalAlignment="Left"
         VerticalAlignment="Center"
@@ -60,7 +60,7 @@
 
     <TextBox 
         Grid.Column="0"
-        IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeConverter COMMAND}}"
+        IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter COMMAND}}"
         AcceptsTab="True"
         Padding="9, 0, 0, 0"
         Name="CommandTextBox"
