@@ -24,6 +24,9 @@ internal class BasePropertyChanged(ILogger<BasePropertyChanged> logger) : INotif
         if (field is not null && field.Equals(value))
             return false;
 
+        if (field is null && value is null)
+            return false;
+
         field = value;
         RaisePropertyChanged(propertyName);
         return true;
@@ -33,7 +36,7 @@ internal class BasePropertyChanged(ILogger<BasePropertyChanged> logger) : INotif
     {
         if (string.IsNullOrWhiteSpace(propertyName))
         {
-            logger.LogError("{MethodName} was raised with {ArgName} which is null or empty", nameof(RaisePropertyChanged), nameof(propertyName));
+            logger.LogError("{ClassName}.{MethodName} was raised with {ArgName} which is null or empty", this.GetType().FullName, nameof(RaisePropertyChanged), nameof(propertyName));
             return false;
         }
 

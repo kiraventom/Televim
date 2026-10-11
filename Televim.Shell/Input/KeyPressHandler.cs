@@ -51,6 +51,7 @@ internal class KeyPressHandler(ILogger<KeyPressHandler> logger, IEventService ev
             _prefixBuilder.Clear();
         }
 
+        // TODO This is quite expensive
         eventService.Raise(new ActionBufferChangedEvent(string.Join(string.Empty, _buffer.Select(k => k.Char?.ToString() ?? $"<{Enum.GetName(k.Key)}>"))));
 
     }

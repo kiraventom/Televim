@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Televim.Shell.Input.Actions;
 
+// TODO: Actions that are prefixes of others are not supported (d/dd)
 internal class ActionDefinitionChecker(ILogger<ActionDefinitionChecker> logger, IActionDefinition definition) : IActionDefinitionChecker
 {
     public IActionDefinition Definition { get; } = definition;

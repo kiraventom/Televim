@@ -15,6 +15,7 @@ internal class UpdateRouter(ILogger<UpdateRouter> logger, IServiceProvider sp) :
 
         try
         {
+            // TODO: Cache
             var updateHandlerType = typeof(IUpdateHandler<>).MakeGenericType(update.GetType());
             var service = sp.GetService(updateHandlerType);
             if (service is not IUpdateHandler handler)

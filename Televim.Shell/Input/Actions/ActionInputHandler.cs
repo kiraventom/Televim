@@ -32,7 +32,17 @@ internal class ActionInputHandler(ILogger<ActionInputHandler> logger, IActionSer
         }
     }
 
-    protected override Task Handle(IAction action) => action.Execute();
+    protected override async Task Handle(IAction action)
+    {
+        try
+        {
+            await action.Execute();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Exception thrown during executing action \"{type}\": {ex}", action.GetType().FullName, ex);
+        }
+    }
 }
 
 

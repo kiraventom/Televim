@@ -13,7 +13,7 @@ internal static class Program
     public static IHost AppHost { get; private set; }
 
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -36,7 +36,7 @@ internal static class Program
         {
             Log.Fatal(ex, "Failed to build host, terminating");
             Log.CloseAndFlush();
-            return;
+            return 1;
         }
 
         var lifetime = AppHost.Services.GetRequiredService<IHostApplicationLifetime>();
@@ -53,13 +53,12 @@ internal static class Program
 
         try
         {
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            // AppHost.Run();
+            return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
             Log.Fatal(ex, "Failed to run, terminating");
-            return;
+            return 1;
         }
         finally
         {
@@ -71,7 +70,7 @@ internal static class Program
     }
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+        => AppBuilder.Configure(() => AppHost.Services.GetRequiredService<App>())
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();

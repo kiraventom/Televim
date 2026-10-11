@@ -13,7 +13,7 @@ internal static class ShellServicesRegister
 {
     public static IServiceCollection AddShell(this IServiceCollection services)
     {
-        var definitions = CollectCommandDefinitions();
+        var definitions = CollectActionDefinitions();
 
         services
             .AddSingleton<IInputListener, InputListener>()
@@ -28,37 +28,37 @@ internal static class ShellServicesRegister
             .AddSingleton<MainWindow>()
             .AddSingleton<App>();
 
-        RegisterCommands(services, definitions.Keys);
+        RegisterActions(services, definitions.Keys);
 
         return services;
     }
 
-    private static Dictionary<Type, IActionDefinition> CollectCommandDefinitions()
+    private static Dictionary<Type, IActionDefinition> CollectActionDefinitions()
     {
         var definitions = new Dictionary<Type, IActionDefinition>();
 
-        var commandTypes = Assembly.GetExecutingAssembly().GetTypes()
+        var actionTypes = Assembly.GetExecutingAssembly().GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract)
             .Where(t => t.IsAssignableTo(typeof(IAction)));
 
-        foreach (var commandType in commandTypes)
+        foreach (var actionType in actionTypes)
         {
-            var attr = commandType.GetCustomAttribute<ActionDefinitionAttribute>();
+            var attr = actionType.GetCustomAttribute<ActionDefinitionAttribute>();
             if (attr is null)
             {
-                Log.Error("Type {commandtype} implements {interface}, but is not marked with definition. Skipping", commandType.Name, nameof(IAction));
+                Log.Error("Type {commandtype} implements {interface}, but is not marked with definition. Skipping", actionType.Name, nameof(IAction));
                 continue;
             }
 
-            var commandDefinition = new ActionDefinition(commandType.Name, attr.Notation, attr.Mode, attr.AllowNumberPrefix);
+            var actionDefinition = new ActionDefinition(actionType.Name, attr.Notation, attr.Mode, attr.AllowNumberPrefix);
 
-            definitions.Add(commandType, commandDefinition);
+            definitions.Add(actionType, actionDefinition);
         }
 
         return definitions;
     }
     
-    private static void RegisterCommands(IServiceCollection services, IEnumerable<Type> types)
+    private static void RegisterActions(IServiceCollection services, IEnumerable<Type> types)
     {
         foreach (var type in types)
             services.AddKeyedTransient(typeof(IAction), type.Name, type);

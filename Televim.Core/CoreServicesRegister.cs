@@ -133,7 +133,7 @@ public static class CoreServicesRegister
         var appDataDirPath = Path.Combine(dataDirPath, PROJECT_NAME);
 
         Directory.CreateDirectory(appConfigDirPath);
-        Directory.CreateDirectory(appDataDirPath);
+        Directory.CreateDirectory(appDataDirPath, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
 
         return new Paths(appConfigDirPath, appDataDirPath);
     }
