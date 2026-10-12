@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Televim.Core.Events;
+namespace Televim.Common.Events;
 
 internal class EventService(IServiceProvider sp, ILogger<EventService> logger) : IEventService
 {

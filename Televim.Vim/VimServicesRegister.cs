@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using Televim.Vim.Actions;
 
 namespace Televim.Vim;
@@ -41,7 +41,7 @@ public static class VimServicesRegister
             var attr = actionType.GetCustomAttribute<ActionDefinitionAttribute>();
             if (attr is null)
             {
-                Log.Error("Type {commandtype} implements {interface}, but is not marked with definition. Skipping", actionType.Name, nameof(IAction));
+                Debug.Fail($"Type {actionType.Name} implements {nameof(IAction)}, but is not marked with definition. Skipping");
                 continue;
             }
 

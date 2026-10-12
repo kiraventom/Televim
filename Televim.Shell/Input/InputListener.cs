@@ -1,13 +1,14 @@
 using Avalonia.Input;
 using Microsoft.Extensions.Logging;
+using Televim.Vim;
 
-namespace Televim.Vim;
+namespace Televim.Shell.Input;
 
 internal class InputListener(ILogger<InputListener> logger, IKeyStrokeHandler keyStrokeHandler) : IInputListener
 {
     public void OnKeyDown(KeyEventArgs e)
     {
-        logger.LogDebug($"KeyEventArgs: Key: {Enum.GetName(e.Key)}, KeySymbol: {e.KeySymbol}, Modifiers: {Enum.GetName(e.KeyModifiers)}");
+        logger.LogDebug("KeyEventArgs: Key: {Key}, KeySymbol: {KeySymbol}, Modifiers: {Modifiers}", Enum.GetName(e.Key), e.KeySymbol, Enum.GetName(e.KeyModifiers));
 
         var keyStroke = ToKeyStroke(e);
         var didHandle = keyStrokeHandler.Handle(keyStroke); 

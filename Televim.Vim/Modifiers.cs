@@ -4,8 +4,8 @@ namespace Televim.Vim;
 public enum Modifiers 
 { 
     None = 0,
-    Shift = 1,
-    Control = 2,
+    Control = 1,
+    Shift = 2,
     Alt = 4,
     Meta = 8 
 }

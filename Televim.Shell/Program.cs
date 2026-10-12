@@ -4,8 +4,9 @@ using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Televim.Core;
+using Televim.Common;
 using Televim.Vim;
+using Televim.Telegram;
 
 namespace Televim.Shell;
 
@@ -26,9 +27,11 @@ internal static class Program
         try
         {
             var builder = Host.CreateApplicationBuilder();
+
             builder.Services
-                .AddCore()
+                .AddCommon()
                 .AddVim()
+                .AddTelegram()
                 .AddShell()
                 .RegisterEventTargets();
 

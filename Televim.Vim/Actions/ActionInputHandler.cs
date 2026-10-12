@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Televim.Core.Utils;
+using Televim.Common.Utils;
 using Televim.Vim.Actions;
 
 namespace Televim.Vim;

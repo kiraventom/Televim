@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="TDLib" Version="1.8.67" />
+        <PackageReference Include="tdlib.native" Version="1.8.67" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Televim.Common\Televim.Common.csproj" />
+    </ItemGroup>
+
+</Project>

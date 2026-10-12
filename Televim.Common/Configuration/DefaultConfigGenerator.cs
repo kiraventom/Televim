@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Televim.Core.Configuration;
+namespace Televim.Common.Configuration;
 
 internal static class DefaultConfigGenerator
 {

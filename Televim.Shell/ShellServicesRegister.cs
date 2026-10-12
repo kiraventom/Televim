@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Televim.Vim;
+using Televim.Shell.Input;
 using Televim.Shell.ViewModels;
 using Televim.Shell.Views;
 using Televim.Vim.Commands;

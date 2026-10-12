@@ -1,8 +1,8 @@
 using TdLib;
-using Televim.Core.Configuration;
-using Televim.Core.Telegram.Updates;
+using Televim.Common.Configuration;
+using Televim.Telegram.Updates;
 
-namespace Televim.Core.Telegram;
+namespace Televim.Telegram;
 
 internal class TelegramClient : ITelegramClient
 {

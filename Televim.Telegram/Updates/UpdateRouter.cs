@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using TdLib;
-using Televim.Core.Telegram.Updates.Handlers;
-using Televim.Core.Utils;
+using Televim.Telegram.Updates.Handlers;
+using Televim.Common.Utils;
 
-namespace Televim.Core.Telegram.Updates;
+namespace Televim.Telegram.Updates;
 
 internal class UpdateRouter(ILogger<UpdateRouter> logger, IServiceProvider sp) : ChannelHandler<TdApi.Update>, IUpdateRouter
 {

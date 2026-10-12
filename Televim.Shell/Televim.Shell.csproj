@@ -17,8 +17,9 @@
       <PackageReference Include="Serilog" Version="4.4.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Televim.Core\Televim.Core.csproj" />
+      <ProjectReference Include="..\Televim.Common\Televim.Common.csproj" />
       <ProjectReference Include="..\Televim.Vim\Televim.Vim.csproj" />
+      <ProjectReference Include="..\Televim.Telegram\Televim.Telegram.csproj" />
     </ItemGroup>
 
 </Project>

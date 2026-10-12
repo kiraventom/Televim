@@ -2,6 +2,10 @@ namespace Televim.Vim;
 
 internal static class KeyNotation
 {
+    public const char MODIFIER_SEPARATOR = '-';
+
+    public static string GetModifierStr(Modifiers mod) => Enum.GetName(mod)[0..0];
+
     public static IReadOnlyList<KeyStroke> Parse(string notation)
     {
         List<KeyStroke> keyStrokes = [];
@@ -35,7 +39,7 @@ internal static class KeyNotation
     {
         var parts = blob
             .Trim('<', '>')
-            .Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            .Split(MODIFIER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
         var modifiers = Modifiers.None;
         foreach (var part in parts.SkipLast(1))

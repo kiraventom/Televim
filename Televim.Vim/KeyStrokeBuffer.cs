@@ -1,6 +1,6 @@
 using Televim.Vim.Utils;
 using Televim.Vim.Actions;
-using Televim.Core.Events;
+using Televim.Common.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Televim.Vim;

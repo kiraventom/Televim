@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-namespace Televim.Core.Utils;
+namespace Televim.Common.Utils;
 
 public abstract class ChannelHandler<T> : IAsyncDisposable
 {

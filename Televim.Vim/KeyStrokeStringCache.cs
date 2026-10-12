@@ -8,17 +8,23 @@ internal static class KeyStrokeStringCache
     {
         if (!_cache.TryGetValue(keyStroke, out var str))
         {
-            var shifted = keyStroke.Modifiers.HasFlag(Modifiers.Shift);
             if (keyStroke.IsPrintable)
             {
                 str = keyStroke.Char.Value.ToString();
-                if (shifted)
-                    str = str.ToUpper();
             }
             else
             {
-                var mod = shifted ? "S-" : string.Empty;
-                str = $"<{mod}{Enum.GetName(keyStroke.Named)}>";
+                var mods = Enum.GetValues<Modifiers>()
+                    .Where(m => m != Modifiers.None)
+                    .Where(m => keyStroke.Modifiers.HasFlag(m));
+
+                var modsStrs = mods.Select(m => KeyNotation.GetModifierStr(m));
+
+                var body = keyStroke.Char?.ToString() ?? Enum.GetName(keyStroke.Named);
+                var parts = modsStrs.Append(body);
+                var blobStr = string.Join(KeyNotation.MODIFIER_SEPARATOR, parts);
+
+                str = $"<{blobStr}>";
             }
 
             _cache[keyStroke] = str;

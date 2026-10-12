@@ -1,4 +1,4 @@
-namespace Televim.Core.Utils;
+namespace Televim.Common.Utils;
 
 public static class ToStringExtensions
 {

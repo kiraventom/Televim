@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Televim.Core.Events;
+using Televim.Common.Events;
 
 namespace Televim.Vim;
 
@@ -17,7 +17,7 @@ internal class InputModeHolder(ILogger<InputModeHolder> logger, IEventService ev
         private set
         {
             if (value == InputModes.INVALID)
-                logger.LogError("Setting {Property} to {Value}, application is not expected to work properly", nameof(CurrentMode), Enum.GetName(field));
+                logger.LogError("Setting {Property} to {Value}, application is not expected to work properly", nameof(CurrentMode), Enum.GetName(value));
 
             field = value;
         }

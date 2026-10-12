@@ -1,6 +1,7 @@
 using Avalonia.Input;
 using Microsoft.Extensions.Logging;
-using Televim.Core.Events;
+using Televim.Common.Events;
+using Televim.Shell.Input;
 using Televim.Vim;
 using Televim.Vim.Actions;
 

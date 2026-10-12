@@ -1,30 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using TdLib;
-using Televim.Core.Configuration;
-using Televim.Core.Events;
-using Televim.Core.Telegram;
-using Televim.Core.Telegram.Updates;
-using Televim.Core.Telegram.Updates.Handlers;
+using Televim.Common.Configuration;
+using Televim.Common.Events;
 
-namespace Televim.Core;
+namespace Televim.Common;
 
-public static class CoreServicesRegister
+public static class CommonServicesRegister
 {
     public const string PROJECT_NAME = "Televim";
 
-    public static IServiceCollection AddCore(this IServiceCollection services)
+    public static IServiceCollection AddCommon(this IServiceCollection services)
     {
         services
             .AddSerilog(ConfigureLogger)
             .AddSingleton<Paths>(BuildPaths)
             .AddSingleton<IEventService, EventService>()
-            .AddSingleton<IConfigService, ConfigService>()
-            .AddSingleton<IUpdateRouter, UpdateRouter>()
-            .AddSingleton<TdClient>(ConfigureTdClient)
-            .AddSingleton<ITelegramClient, TelegramClient>();
-
-        RegisterGenericImplementations(services, typeof(IUpdateHandler<>), (c, i, t) => { foreach (var @interface in i) c.AddTransient(@interface, t); } );
+            .AddSingleton<IConfigService, ConfigService>();
 
         return services;
     }
@@ -86,7 +77,7 @@ public static class CoreServicesRegister
         return services;
     }
 
-    private static void RegisterGenericImplementations(IServiceCollection collection, Type genericInterface, Action<IServiceCollection, IEnumerable<Type>, Type> register)
+    public static IServiceCollection RegisterGenericImplementations(this IServiceCollection services, Type genericInterface, Action<IServiceCollection, IEnumerable<Type>, Type> register)
     {
         if (!genericInterface.IsGenericType)
             throw new NotSupportedException($"Type {genericInterface.FullName} is not generic");
@@ -102,11 +93,11 @@ public static class CoreServicesRegister
                 .Where(i => i.IsGenericType)
                 .Where(i => i.GetGenericTypeDefinition() == genericInterface);
 
-            register(collection, implemented, @class);
+            register(services, implemented, @class);
         }
-    }
 
-    private static TdClient ConfigureTdClient(IServiceProvider provider) => new TdClient();
+        return services;
+    }
 
     private static void ConfigureLogger(IServiceProvider provider, LoggerConfiguration configuration)
     {

@@ -1,6 +1,6 @@
 using TdLib;
 
-namespace Televim.Core.Telegram.Updates;
+namespace Televim.Telegram.Updates;
 
 internal interface IUpdateRouter
 {

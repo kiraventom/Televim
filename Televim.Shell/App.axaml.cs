@@ -3,9 +3,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Televim.Core;
-using Televim.Core.Configuration;
-using Televim.Core.Events;
+using Televim.Common;
+using Televim.Common.Configuration;
+using Televim.Common.Events;
 using Televim.Shell.Views;
 
 namespace Televim.Shell;
@@ -37,7 +37,7 @@ public partial class App : Application,
     {
         // TODO Possibly replace
         Log.Error($"Default config detected at {@event.ConfigFilePath}"); 
-        Log.Information($"{CoreServicesRegister.PROJECT_NAME} requires following properties to be specified: {string.Join(", ", @event.PropsToChange)}.");
+        Log.Information($"{CommonServicesRegister.PROJECT_NAME} requires following properties to be specified: {string.Join(", ", @event.PropsToChange)}.");
         Log.Information("Exiting...");
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

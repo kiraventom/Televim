@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Televim.Core.Events;
+using Televim.Common.Events;
 using Televim.Vim.Commands;
 
 namespace Televim.Vim.Actions.CommandMode;
