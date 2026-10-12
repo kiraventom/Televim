@@ -1,6 +1,6 @@
 using Avalonia.Input;
 
-namespace Televim.Shell.Input;
+namespace Televim.Vim;
 
 internal interface IInputListener
 {

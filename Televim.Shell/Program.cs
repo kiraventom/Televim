@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Televim.Core;
+using Televim.Vim;
 
 namespace Televim.Shell;
 
@@ -27,6 +28,7 @@ internal static class Program
             var builder = Host.CreateApplicationBuilder();
             builder.Services
                 .AddCore()
+                .AddVim()
                 .AddShell()
                 .RegisterEventTargets();
 
@@ -53,6 +55,7 @@ internal static class Program
 
         try
         {
+            AppHost.Start();
             return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)

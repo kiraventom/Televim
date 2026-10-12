@@ -18,6 +18,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Televim.Core\Televim.Core.csproj" />
+      <ProjectReference Include="..\Televim.Vim\Televim.Vim.csproj" />
     </ItemGroup>
 
 </Project>

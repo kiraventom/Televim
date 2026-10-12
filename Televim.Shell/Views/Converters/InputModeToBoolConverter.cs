@@ -1,7 +1,7 @@
 using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
-using Televim.Shell.Input;
+using Televim.Vim;
 
 namespace Televim.Shell.Views.Converters;
 

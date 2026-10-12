@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Microsoft.Extensions.Logging;
-using Televim.Shell.Input;
+using Televim.Vim;
 using Televim.Shell.ViewModels;
 
 namespace Televim.Shell.Views;

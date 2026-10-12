@@ -1,13 +1,13 @@
 using Avalonia.Input;
-using Televim.Shell.Input;
+using Televim.Vim;
+using Televim.Vim.Commands;
 
 namespace Televim.Shell.ViewModels;
 
-public interface IMainViewModel
+public interface IMainViewModel : ICommandTextHolder
 {
     event Action<InputModes> InputModeChanged;
     InputModes CurrentInputMode { get; }
     string ActionBuffer { get; }
-    string CommandText { get; set; }
     void OnKeyDown(KeyEventArgs e);
 }
