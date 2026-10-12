@@ -5,7 +5,7 @@ using Televim.Common.Utils;
 
 namespace Televim.Telegram.Updates;
 
-internal class UpdateRouter(ILogger<UpdateRouter> logger, IServiceProvider sp) : ChannelHandler<TdApi.Update>, IUpdateRouter
+internal class UpdateRouter(ILogger<UpdateRouter> logger, IServiceProvider sp) : ChannelHandler<TdApi.Update>(logger), IUpdateRouter
 {
     public void Route(TdApi.Update update) => Receive(update);
 

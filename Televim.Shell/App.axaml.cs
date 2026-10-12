@@ -27,13 +27,14 @@ public partial class App : Application,
         base.OnFrameworkInitializationCompleted();
     }
 
-    public async Task Handle(DefaultConfigGeneratedEvent @event)
+    public Task Handle(DefaultConfigGeneratedEvent @event)
     {
         // TODO Possibly replace
         Log.Information($"No config file found. Default config created at {@event.ConfigFilePath}");
+        return Task.CompletedTask;
     }
 
-    public async Task Handle(DefaultConfigDetectedEvent @event)
+    public Task Handle(DefaultConfigDetectedEvent @event)
     {
         // TODO Possibly replace
         Log.Error($"Default config detected at {@event.ConfigFilePath}"); 
@@ -42,5 +43,7 @@ public partial class App : Application,
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.TryShutdown(1);
+
+        return Task.CompletedTask;
     }
 }

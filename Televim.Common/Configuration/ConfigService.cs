@@ -34,7 +34,10 @@ internal class ConfigService : IConfigService
     {
         _eventService = eventService;
         _configFilePath = Path.Combine(paths.ConfigDir, CONFIG_FILENAME);
+
+        // TODO: Creating file/directory from ctor: not nice
         _defaultConfig = DefaultConfigGenerator.Generate(paths);
+        CurrentConfig = _defaultConfig;
     }
 
     public async Task<Config> GetCurrent()

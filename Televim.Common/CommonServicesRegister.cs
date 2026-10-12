@@ -123,8 +123,17 @@ public static class CommonServicesRegister
         var appConfigDirPath = Path.Combine(configDirPath, PROJECT_NAME);
         var appDataDirPath = Path.Combine(dataDirPath, PROJECT_NAME);
 
-        Directory.CreateDirectory(appConfigDirPath);
-        Directory.CreateDirectory(appDataDirPath, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        var userrwx = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute;
+        if (OperatingSystem.IsLinux())
+        {
+            Directory.CreateDirectory(appConfigDirPath, userrwx);
+            Directory.CreateDirectory(appDataDirPath, userrwx);
+        }
+        else
+        {
+            Directory.CreateDirectory(appConfigDirPath);
+            Directory.CreateDirectory(appDataDirPath);
+        }
 
         return new Paths(appConfigDirPath, appDataDirPath);
     }

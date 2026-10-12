@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Televim.Vim.Actions;
 
-internal class ActionFactory(ILogger<ActionFactory> logger, IReadOnlyList<IActionDefinition> definitions, IServiceProvider sp) : IActionFactory
+internal class ActionFactory(IReadOnlyList<IActionDefinition> definitions, IServiceProvider sp) : IActionFactory
 {
     public IReadOnlyList<IActionDefinition> Definitions => definitions;
 

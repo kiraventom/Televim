@@ -1,15 +1,18 @@
 using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 
 namespace Televim.Common.Utils;
 
 public abstract class ChannelHandler<T> : IAsyncDisposable
 {
+    private readonly ILogger<ChannelHandler<T>> _logger;
     private readonly Channel<T> _channel;
     private readonly Task _loop;
     private readonly CancellationTokenSource _cts = new();
 
-    protected ChannelHandler()
+    protected ChannelHandler(ILogger<ChannelHandler<T>> logger)
     {
+        _logger = logger;
         _channel = Channel.CreateUnbounded<T>(new() { SingleReader = true });
         _loop = Task.Run(() => Run(_cts.Token));
     }
@@ -38,7 +41,15 @@ public abstract class ChannelHandler<T> : IAsyncDisposable
     {
         await foreach (var item in _channel.Reader.ReadAllAsync(ct))
         {
-            await Handle(item);
+            try
+            {
+                await Handle(item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Exception was thrown when handling item {Item} in {Type}: {ex}", item.ToString(), this.GetType().FullName, ex.ToString());
+                continue;
+            }
         }
     }
 }

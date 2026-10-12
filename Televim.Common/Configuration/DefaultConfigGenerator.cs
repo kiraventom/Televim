@@ -31,30 +31,33 @@ internal static class DefaultConfigGenerator
 
     private static string GetDeviceModel()
     {
-        string dmiPath = "/sys/devices/virtual/dmi/id/product_name";
-        if (File.Exists(dmiPath))
+        if (OperatingSystem.IsLinux())
         {
-            try
+            string dmiPath = "/sys/devices/virtual/dmi/id/product_name";
+            if (File.Exists(dmiPath))
             {
-                string model = File.ReadAllText(dmiPath).Trim();
-                if (!string.IsNullOrEmpty(model) && model != "None" && model != "System Product Name")
-                    return model;
+                try
+                {
+                    string model = File.ReadAllText(dmiPath).Trim();
+                    if (!string.IsNullOrEmpty(model) && model != "None" && model != "System Product Name")
+                        return model;
+                }
+                catch 
+                {}
             }
-            catch 
-            {}
-        }
 
-        string armPath = "/proc/device-tree/model";
-        if (File.Exists(armPath))
-        {
-            try
+            string armPath = "/proc/device-tree/model";
+            if (File.Exists(armPath))
             {
-                string model = File.ReadAllText(armPath).Trim('\0', ' ', '\r', '\n');
-                if (!string.IsNullOrEmpty(model))
-                    return model;
+                try
+                {
+                    string model = File.ReadAllText(armPath).Trim('\0', ' ', '\r', '\n');
+                    if (!string.IsNullOrEmpty(model))
+                        return model;
+                }
+                catch 
+                {}
             }
-            catch 
-            {}
         }
 
         return Environment.MachineName;

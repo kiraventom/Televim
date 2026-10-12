@@ -11,7 +11,7 @@ internal class PrefixBuilder
 
     public int? Append(char ch)
     {
-        if (!char.IsDigit(ch))
+        if (!char.IsAsciiDigit(ch))
             throw new ArgumentException($"Char '{ch}' is not a digit");
 
         if (Number == MAX_PREFIX_VALUE)

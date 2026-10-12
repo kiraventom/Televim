@@ -62,6 +62,6 @@ public static class VimServicesRegister
     private static ActionFactory BuildFactory(IServiceProvider provider, IReadOnlyList<IActionDefinition> definitions)
     {
         var logger = provider.GetRequiredService<ILogger<ActionFactory>>();
-        return new ActionFactory(logger, definitions, provider);
+        return new ActionFactory(definitions, provider);
     }
 }

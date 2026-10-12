@@ -7,7 +7,7 @@ public readonly record struct KeyStroke(char? Char, NamedKey Named, Modifiers Mo
     public bool IsPrintable => Char is { } c && !char.IsControl(c)
         && (Modifiers & (Modifiers.Control | Modifiers.Alt | Modifiers.Meta)) == Modifiers.None;
 
-    public bool IsDigit => IsPrintable && char.IsDigit(Char.Value);
+    public bool IsDigit => IsPrintable && char.IsAsciiDigit(Char.Value);
 
     public bool Matches(KeyStroke other)
     {

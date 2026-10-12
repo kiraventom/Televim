@@ -6,7 +6,7 @@ namespace Televim.Vim;
 
 // Using ChannelHandler here so we can synchonously return if input is handled
 // and then run the action asynchronously
-internal class ActionInputHandler(ILogger<ActionInputHandler> logger, IActionService actionService) : ChannelHandler<IAction>, IActionInputHandler
+internal class ActionInputHandler(ILogger<ActionInputHandler> logger, IActionService actionService) : ChannelHandler<IAction>(logger), IActionInputHandler
 {
     public (bool IsHandled, bool ExpectFollowUp) Handle(ActionInput input)
     {
