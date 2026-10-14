@@ -3,7 +3,7 @@ using Televim.Vim.Actions;
 
 namespace Televim.Vim;
 
-internal class KeyStrokeHandler(ILogger<KeyStrokeHandler> logger, IActionInputBuilder inputBuilder, IActionInputHandler inputHandler, IKeyStrokeBuffer buffer, IInputModeHolder inputModeHolder) : IKeyStrokeHandler
+internal class KeyStrokeHandler(ILogger<KeyStrokeHandler> logger, IActionInputBuilder inputBuilder, IActionInputHandler inputHandler, IKeyStrokeBuffer buffer) : IKeyStrokeHandler
 {
     public bool Handle(KeyStroke keyStroke)
     {
@@ -12,24 +12,27 @@ internal class KeyStrokeHandler(ILogger<KeyStrokeHandler> logger, IActionInputBu
 
         logger.LogDebug("Parsed key stroke: {stroke}", keyStroke);
 
-        if (keyStroke.IsDigit && buffer.KeyStrokes.Count == 0)
-        {
-            if (inputModeHolder.CurrentModeSupportsPrefixes())
-                buffer.AppendPrefix(keyStroke.Char.Value);
-
-            return false;
-        }
-
         buffer.Append(keyStroke);
 
-        var input = inputBuilder.Build(buffer);
+        while (true)
+        {
+            var input = inputBuilder.Build(buffer);
+            var (IsHandled, ExpectFollowUp) = inputHandler.Handle(input);
 
-        var (IsEventHandled, SkipBufferClear) = inputHandler.Handle(input);
+            if (IsHandled)
+            {
+                if (!ExpectFollowUp)
+                    buffer.Clear();
 
-        if (!SkipBufferClear)
-            buffer.Clear();
+                return true;
+            }
 
-        return IsEventHandled;
+            if (!buffer.TryDropOldest())
+            {
+                buffer.Clear();
+                return false;
+            }
+        }
     }
 }
 

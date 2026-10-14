@@ -5,7 +5,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Televim.Vim;
 
-internal class KeyStrokeBuffer(ILogger<KeyStrokeBuffer> logger, IEventService eventService) : IKeyStrokeBuffer
+internal class KeyStrokeBuffer(ILogger<KeyStrokeBuffer> logger, IEventService eventService, IInputModeHolder inputModeHolder) : IKeyStrokeBuffer
+
 {
     private readonly List<KeyStroke> _keyStrokes = [];
     private readonly PrefixBuilder _prefixBuilder = new();
@@ -17,14 +18,31 @@ internal class KeyStrokeBuffer(ILogger<KeyStrokeBuffer> logger, IEventService ev
 
     public void Append(KeyStroke keyStroke)
     {
-        _keyStrokes.Add(keyStroke);
+        if (keyStroke.IsDigit && inputModeHolder.CurrentModeSupportsPrefixes())
+            _prefixBuilder.Append(keyStroke.Char.Value);
+        else
+            _keyStrokes.Add(keyStroke);
+
         UpdateText();
     }
 
-    public void AppendPrefix(char ch)
+    public bool TryDropOldest()
     {
-        _prefixBuilder.Append(ch);
-        UpdateText();
+        if (Prefix is not null && KeyStrokes.Count > 0)
+        {
+            _prefixBuilder.Clear();
+            UpdateText();
+            return true;
+        }
+
+        if (KeyStrokes.Count > 1)
+        {
+            _keyStrokes.RemoveAt(0);
+            UpdateText();
+            return true;
+        }
+
+        return false;
     }
 
     public void Clear()
