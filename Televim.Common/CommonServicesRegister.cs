@@ -30,8 +30,7 @@ public static class CommonServicesRegister
             {
                 if (typeDescriptor.Lifetime != ServiceLifetime.Singleton)
                 {
-                    Log.Fatal("Can't register {Type} as IEventTarget: it's {Lifetime}, not a Singleton", concreteType, Enum.GetName<ServiceLifetime>(typeDescriptor.Lifetime));
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Can't register {concreteType.FullName} as IEventTarget: it's {Enum.GetName<ServiceLifetime>(typeDescriptor.Lifetime)}, not a Singleton");
                 }
 
                 foreach (var eventTargetInterface in eventTargetInterfaces)
@@ -58,8 +57,7 @@ public static class CommonServicesRegister
                 {
                     if (interfaceDescriptor.Lifetime != ServiceLifetime.Singleton)
                     {
-                        Log.Fatal("Can't register {Type} as IEventTarget<>: it's {Lifetime}, not a Singleton", interfaceDescriptor.ServiceType, Enum.GetName<ServiceLifetime>(interfaceDescriptor.Lifetime));
-                        throw new NotSupportedException();
+                        throw new NotSupportedException($"Can't register {interfaceDescriptor.ServiceType.FullName} as IEventTarget: it's {Enum.GetName<ServiceLifetime>(interfaceDescriptor.Lifetime)}, not a Singleton");
                     }
 
                     foreach (var eventTargetInterface in eventTargetInterfaces)
