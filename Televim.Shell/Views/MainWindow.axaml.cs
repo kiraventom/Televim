@@ -25,13 +25,7 @@ public partial class MainWindow : Window
 
     private void OnInputModeChanged(InputModes inputMode)
     {
-        // TODO TEMP
-        if (inputMode == InputModes.INSERT)
-            Dispatcher.Post(() => InsertTextBox.Focus());
-        else if (inputMode == InputModes.COMMAND)
-            Dispatcher.Post(() => CommandTextBox.Focus());
-        else
-            Dispatcher.Post(() => Focus());
+        // TODO Focus via XAML extension here
     }
 
     private void OnOpened(object sender, EventArgs e) => Focus();

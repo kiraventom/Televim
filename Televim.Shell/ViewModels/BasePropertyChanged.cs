@@ -1,10 +1,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.Logging;
 
 namespace Televim.Shell.ViewModels;
 
-internal class BasePropertyChanged(ILogger<BasePropertyChanged> logger) : INotifyPropertyChanged
+internal class BasePropertyChanged : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -35,10 +34,7 @@ internal class BasePropertyChanged(ILogger<BasePropertyChanged> logger) : INotif
     private bool IsPropertyNameValid(string propertyName)
     {
         if (string.IsNullOrWhiteSpace(propertyName))
-        {
-            logger.LogError("{ClassName}.{MethodName} was raised with {ArgName} which is null or empty", this.GetType().FullName, nameof(RaisePropertyChanged), nameof(propertyName));
             return false;
-        }
 
         return true;
     }

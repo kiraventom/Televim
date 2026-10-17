@@ -7,6 +7,7 @@ using Serilog;
 using Televim.Common;
 using Televim.Vim;
 using Televim.Telegram;
+using Televim.Shell.ViewModels;
 
 namespace Televim.Shell;
 
@@ -53,6 +54,23 @@ internal static class Program
                     desktopLifetime.Shutdown();
             });
         });
+
+        // TEST DATA
+        {
+            var viewModel = AppHost.Services.GetRequiredService<IMainViewModel>();
+
+            var chat = new ChatViewModel() { Name = "Chat #1" };
+            chat.Messages.Add(new ChatMessageViewModel { Text = "Text message" });
+            chat.Messages.Add(new ChatMessageViewModel { Text = "Response" });
+
+            var otherChat = new ChatViewModel() { Name = "Чат №2" };
+            otherChat.Messages.Add(new ChatMessageViewModel { Text = "Сообщение" });
+            otherChat.Messages.Add(new ChatMessageViewModel { Text = "Ответ" });
+
+            viewModel.ChatList.Chats.Add(chat);
+            viewModel.ChatList.Chats.Add(otherChat);
+        }
+        // TEST DATA
 
         Log.Information("Host built, running...");
 

@@ -1,19 +1,21 @@
 using Microsoft.Extensions.Logging;
+using Televim.Common.Events;
 
 namespace Televim.Vim.Actions.NormalMode;
 
+public readonly record struct MoveToTopEvent();
+public readonly record struct MoveToLineEvent(int Number);
+
 [ActionDefinition("gg", InputModes.NORMAL, AllowNumberPrefix = true)]
-internal class MoveToTopAction(ILogger<MoveToTopAction> logger) : Action
+internal class MoveToTopAction(ILogger<MoveToTopAction> logger, IEventService eventService) : Action
 {
     public override Task Execute()
     {
-        // TEMP
-        if (Input.NumberPrefix == 0)
-            logger.LogInformation("Moved to top");
-        else
-            logger.LogInformation("Moved to line {number}", Input.NumberPrefix);
+        if (Input.NumberPrefix is null)
+            return eventService.Raise(new MoveToTopEvent());
 
-        return Task.CompletedTask;
+        return eventService.Raise(new MoveToLineEvent(Input.NumberPrefix.Value));
     }
 }
+
 

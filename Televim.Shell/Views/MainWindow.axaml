@@ -28,15 +28,81 @@
         <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <TextBox
-        Grid.Row="0"
-        Name="InsertTextBox"
-        AcceptsTab="True"
-        AcceptsReturn="True"
-        IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter INSERT}}"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Center"
-        Margin="5,0"/>
+    <Grid
+        Grid.Row="0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <ContentControl
+            Grid.Column="0"
+            Content="{Binding ChatList}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate DataType="{x:Type vm:IChatList}">
+                    <ListBox
+                        SelectedItem="{Binding SelectedChat}"
+                        ItemsSource="{Binding Chats}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:IChat}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Text="{Binding Name}"
+                                        FontWeight="Bold" />
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Text="{Binding LastMessage.Text}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
+
+        <ContentControl 
+            Grid.Column="1"
+            Content="{Binding OpenChat}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate DataType="{x:Type vm:IOpenChat}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <ListBox
+                            Grid.Row="0"
+                            ItemsSource="{Binding Messages}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:IChatMessage}">
+                                    <Grid>
+                                        <TextBlock Text="{Binding Text}" /> 
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsTab="True"
+                            AcceptsReturn="True"
+                            IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter INSERT}}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Margin="5,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
+    </Grid>
 
     <Grid
         Grid.Row="1">

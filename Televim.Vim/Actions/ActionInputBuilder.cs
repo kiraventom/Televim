@@ -4,7 +4,7 @@ internal class ActionInputBuilder(IInputModeHolder inputModeHolder) : IActionInp
 {
     public ActionInput Build(IKeyStrokeBuffer buffer)
     {
-        return new ActionInput(buffer.KeyStrokes, buffer.Prefix ?? 0, inputModeHolder.CurrentMode);
+        return new ActionInput(buffer.KeyStrokes, buffer.Prefix, inputModeHolder.CurrentMode);
     }
 }
 

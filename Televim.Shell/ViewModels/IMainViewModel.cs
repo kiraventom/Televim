@@ -1,3 +1,4 @@
+using Avalonia.Collections;
 using Avalonia.Input;
 using Televim.Vim;
 using Televim.Vim.Commands;
@@ -10,4 +11,7 @@ public interface IMainViewModel : ICommandTextHolder
     InputModes CurrentInputMode { get; }
     string ActionBuffer { get; }
     void OnKeyDown(KeyEventArgs e);
+
+    IChatList ChatList { get; }
+    IOpenChat OpenChat { get; }
 }
