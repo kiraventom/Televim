@@ -1,6 +1,6 @@
 namespace Televim.Shell.ViewModels;
 
-internal class ChatMessageViewModel : BasePropertyChanged, IChatMessage
+internal class ChatMessageViewModel : BasePropertyChanged, IChatMessageViewModel
 {
     public string Text
     { 

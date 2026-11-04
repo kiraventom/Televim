@@ -2,11 +2,11 @@
 
 namespace Televim.Shell.ViewModels;
 
-public interface IChat
+public interface IChatViewModel
 {
     string Name { get; }
-    AvaloniaList<IChatMessage> Messages { get; }
-    IChatMessage LastMessage => Messages.LastOrDefault();
+    AvaloniaList<IChatMessageViewModel> Messages { get; }
+    IChatMessageViewModel LastMessage => Messages.LastOrDefault();
 
     // Picture ProfilePic { get; }
     // Is typing? Who typing?

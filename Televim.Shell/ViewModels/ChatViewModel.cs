@@ -4,7 +4,7 @@ namespace Televim.Shell.ViewModels;
 
 internal class ChatViewModel : 
     BasePropertyChanged, 
-    IChat
+    IChatViewModel
 {
     public string Name 
     { 
@@ -12,6 +12,6 @@ internal class ChatViewModel :
         set => SetAndRaise(ref field, value);
     }
 
-    public AvaloniaList<IChatMessage> Messages { get; } = [];
+    public AvaloniaList<IChatMessageViewModel> Messages { get; } = [];
 }
 

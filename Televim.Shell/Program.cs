@@ -57,7 +57,8 @@ internal static class Program
 
         // TEST DATA
         {
-            var viewModel = AppHost.Services.GetRequiredService<IMainViewModel>();
+            var main = AppHost.Services.GetRequiredService<IMainViewModel>();
+            var chatList = AppHost.Services.GetRequiredService<IChatListViewModel>();
 
             var chat = new ChatViewModel() { Name = "Chat #1" };
             chat.Messages.Add(new ChatMessageViewModel { Text = "Text message" });
@@ -67,8 +68,10 @@ internal static class Program
             otherChat.Messages.Add(new ChatMessageViewModel { Text = "Сообщение" });
             otherChat.Messages.Add(new ChatMessageViewModel { Text = "Ответ" });
 
-            viewModel.ChatList.Chats.Add(chat);
-            viewModel.ChatList.Chats.Add(otherChat);
+            chatList.Chats.Add(chat);
+            chatList.Chats.Add(otherChat);
+
+            main.FocusedViewModel = (FocusableViewModel)chatList;
         }
         // TEST DATA
 

@@ -39,12 +39,12 @@
             Grid.Column="0"
             Content="{Binding ChatList}">
             <ContentControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type vm:IChatList}">
+                <DataTemplate DataType="{x:Type vm:IChatListViewModel}">
                     <ListBox
                         SelectedItem="{Binding SelectedChat, Mode=TwoWay}"
                         ItemsSource="{Binding Chats}">
                         <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type vm:IChat}">
+                            <DataTemplate DataType="{x:Type vm:IChatViewModel}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -71,7 +71,7 @@
             Grid.Column="1"
             Content="{Binding OpenChat}">
             <ContentControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type vm:IOpenChat}">
+                <DataTemplate DataType="{x:Type vm:IOpenChatViewModel}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -82,7 +82,7 @@
                             Grid.Row="0"
                             ItemsSource="{Binding Messages}">
                             <ListBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type vm:IChatMessage}">
+                                <DataTemplate DataType="{x:Type vm:IChatMessageViewModel}">
                                     <Grid>
                                         <TextBlock Text="{Binding Text}" /> 
                                     </Grid>

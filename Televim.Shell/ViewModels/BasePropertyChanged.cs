@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Televim.Shell.ViewModels;
 
-internal class BasePropertyChanged : INotifyPropertyChanged
+public class BasePropertyChanged : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
 

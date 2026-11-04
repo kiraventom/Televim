@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Televim.Common.Configuration;
 using Televim.Common.Events;
@@ -20,8 +21,24 @@ public static class CommonServicesRegister
         return services;
     }
 
+    internal static EventTargetRegistry GetOrAddEventTargetRegistry(this IServiceCollection services)
+    {
+        var existing = services
+            .FirstOrDefault(d => d.ServiceType == typeof(EventTargetRegistry))
+            ?.ImplementationInstance as EventTargetRegistry;
+
+        if (existing is not null)
+            return existing;
+
+        var registry = new EventTargetRegistry();
+        services.AddSingleton(registry);
+        return registry;
+    }
+
     public static IServiceCollection RegisterEventTargets(this IServiceCollection services)
     {
+        var registry = services.GetOrAddEventTargetRegistry();
+
         RegisterGenericImplementations(services, typeof(IEventTarget<>), (collection, eventTargetInterfaces, concreteType) =>
         {
             // Let's check if this type is already registered
@@ -38,6 +55,9 @@ public static class CommonServicesRegister
                     services.AddSingleton(eventTargetInterface, sp => sp.GetRequiredService(concreteType));
                     Log.Debug("Registered {Type} as IEventTarget<{Event}>", concreteType, eventTargetInterface.GetGenericArguments().First());
                 }
+
+                if (concreteType.GetCustomAttribute<IgnoreEventsByDefaultAttribute>(inherit: true) is not null)
+                    registry.AddIgnoredByDefault(concreteType);
 
                 return;
             }
@@ -65,6 +85,10 @@ public static class CommonServicesRegister
                         services.AddSingleton(eventTargetInterface, sp => sp.GetRequiredService(interfaceDescriptor.ServiceType));
                         Log.Debug("Registered {Type} as IEventTarget<{Event}>", interfaceDescriptor.ServiceType, eventTargetInterface.GetGenericArguments().First());
                     }
+
+                    if (concreteType.GetCustomAttribute<IgnoreEventsByDefaultAttribute>(inherit: true) is not null)
+                        registry.AddIgnoredByDefault(concreteType);
+
                     return;
                 }
             }

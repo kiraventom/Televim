@@ -6,10 +6,11 @@ using Televim.Vim.Actions.NormalMode;
 
 namespace Televim.Shell.ViewModels;
 
-internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IInputModeHolder inputModeHolder) :
-    BasePropertyChanged,
+public readonly record struct CloseChatRequestedEvent;
+
+internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IEventService eventService, IInputModeHolder inputModeHolder) :
+    FocusableViewModel,
     IOpenChatViewModel,
-    IOpenChat,
     IEventTarget<DeselectRequestedEvent>,
     IEventTarget<InputModeChangedEvent>
 {
@@ -19,11 +20,11 @@ internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IInputModeHo
         set => SetAndRaise(ref field, value);
     }
 
-    public AvaloniaList<IChatMessage> Messages { get; } = [];
+    public AvaloniaList<IChatMessageViewModel> Messages { get; } = [];
 
     public InputModes CurrentInputMode => inputModeHolder.CurrentMode;
 
-    public IChat Chat
+    public IChatViewModel Chat
     {
         get => field;
         set
@@ -45,7 +46,7 @@ internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IInputModeHo
 
     public bool IsEmpty => Chat is null;
 
-    public void SelectChat(IChat chat)
+    public void SelectChat(IChatViewModel chat)
     {
         Chat = chat;
     }
@@ -53,8 +54,7 @@ internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IInputModeHo
     public Task Handle(DeselectRequestedEvent @event)
     {
         Chat = null;
-        logger.LogDebug("Deselect executed");
-        return Task.CompletedTask;
+        return eventService.Raise(new CloseChatRequestedEvent());
     }
 
     public Task Handle(InputModeChangedEvent @event)

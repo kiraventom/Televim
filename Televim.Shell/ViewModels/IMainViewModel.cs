@@ -11,6 +11,8 @@ public interface IMainViewModel : ICommandTextHolder
     string ActionBuffer { get; }
     void OnKeyDown(KeyEventArgs e);
 
-    IChatList ChatList { get; }
-    IOpenChat OpenChat { get; }
+    IChatListViewModel ChatList { get; }
+    IOpenChatViewModel OpenChat { get; }
+
+    FocusableViewModel FocusedViewModel { get; set; }
 }

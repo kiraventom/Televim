@@ -3,26 +3,16 @@ using Televim.Common.Events;
 using Televim.Shell.Input;
 using Televim.Vim;
 using Televim.Vim.Actions;
-using Televim.Vim.Actions.NormalMode;
 
 namespace Televim.Shell.ViewModels;
 
-internal class IChildViewModel
-{
-    bool IsFocused { get; set; }
-}
-
-internal class MainViewModel(IInputListener listener, IInputModeHolder inputModeHolder, IOpenChatViewModel openChatVm, IActionBuffer actionBuffer) 
+internal class MainViewModel(IEventService eventService, IInputListener listener, IInputModeHolder inputModeHolder, IChatListViewModel chatListVm, IOpenChatViewModel openChatVm, IActionBuffer actionBuffer) 
     : BasePropertyChanged, 
     IMainViewModel, 
     IEventTarget<InputModeChangedEvent>,
     IEventTarget<ActionBufferChangedEvent>,
-    IEventTarget<SelectRequestedEvent>,
-    IEventTarget<MoveToTopEvent>,
-    IEventTarget<MoveToLineEvent>,
-    IEventTarget<MoveToBottomEvent>,
-    IEventTarget<MoveUpEvent>,
-    IEventTarget<MoveDownEvent>
+    IEventTarget<OpenChatRequestedEvent>,
+    IEventTarget<CloseChatRequestedEvent>
 {
     public event Action<InputModes> InputModeChanged;
 
@@ -35,8 +25,29 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
         set => SetAndRaise(ref field, value);
     }
 
-    public IChatList ChatList { get; } = new ChatListViewModel();
-    public IOpenChat OpenChat => openChatVm;
+    public IChatListViewModel ChatList => chatListVm;
+    public IOpenChatViewModel OpenChat => openChatVm;
+
+    public FocusableViewModel FocusedViewModel
+    {
+        get => field;
+        set
+        {
+            if (field is {} oldVm)
+            {
+                eventService.Ignore(oldVm);
+                oldVm.IsFocused = false;
+            }
+
+            field = value;
+
+            if (field is {} newVm)
+            {
+                eventService.StopIgnore(newVm);
+                newVm.IsFocused = true;
+            }
+        }
+    }
 
     public void OnKeyDown(KeyEventArgs e) => listener.OnKeyDown(e);
 
@@ -53,51 +64,19 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
         return Task.CompletedTask;
     }
 
-    public Task Handle(SelectRequestedEvent @event)
+    // TODO Rework this into something universal?
+    // maybe use same events? vim's for escape/selecg
+    public Task Handle(OpenChatRequestedEvent @event)
     {
-        if (openChatVm.IsEmpty)
-            openChatVm.SelectChat(ChatList.SelectedChat);
-
+        // TODO
+        FocusedViewModel = (FocusableViewModel)OpenChat;
+        OpenChat.SelectChat(@event.Chat);
         return Task.CompletedTask;
     }
 
-    public Task Handle(MoveToTopEvent @event)
+    public Task Handle(CloseChatRequestedEvent @event)
     {
-        if (openChatVm.IsEmpty)
-            ChatList.SelectFirst();
-
-        return Task.CompletedTask;
-    }
-
-    public Task Handle(MoveToLineEvent @event)
-    {
-        if (openChatVm.IsEmpty)
-            ChatList.SelectByIndex(@event.Number);
-
-        return Task.CompletedTask;
-    }
-
-    public Task Handle(MoveToBottomEvent @event)
-    {
-        if (openChatVm.IsEmpty)
-            ChatList.SelectLast();
-
-        return Task.CompletedTask;
-    }
-
-    public Task Handle(MoveUpEvent @event)
-    {
-        if (openChatVm.IsEmpty)
-            ChatList.MoveSelectionUp();
-
-        return Task.CompletedTask;
-    }
-
-    public Task Handle(MoveDownEvent @event)
-    {
-        if (openChatVm.IsEmpty)
-            ChatList.MoveSelectionDown();
-
+        FocusedViewModel = (FocusableViewModel)ChatList;
         return Task.CompletedTask;
     }
 }
