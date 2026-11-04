@@ -34,14 +34,18 @@ internal class ChatListViewModel :
     public void MoveSelectionUp()
     {
         var index = Chats.IndexOf(SelectedChat);
-        if (index > 0)
+        if (index < 0)
+            SelectLast();
+        else if (index > 0)
             SelectedChat = Chats[index - 1];
     }
 
     public void MoveSelectionDown()
     {
         var index = Chats.IndexOf(SelectedChat);
-        if (index >= 0 && index < Chats.Count - 1)
+        if (index < 0)
+            SelectFirst();
+        else if (index >= 0 && index < Chats.Count - 1)
             SelectedChat = Chats[index + 1];
     }
 }

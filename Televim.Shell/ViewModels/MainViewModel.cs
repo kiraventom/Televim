@@ -7,7 +7,12 @@ using Televim.Vim.Actions.NormalMode;
 
 namespace Televim.Shell.ViewModels;
 
-internal class MainViewModel(IInputListener listener, IInputModeHolder inputModeHolder, IActionBuffer actionBuffer) 
+internal class IChildViewModel
+{
+    bool IsFocused { get; set; }
+}
+
+internal class MainViewModel(IInputListener listener, IInputModeHolder inputModeHolder, IOpenChatViewModel openChatVm, IActionBuffer actionBuffer) 
     : BasePropertyChanged, 
     IMainViewModel, 
     IEventTarget<InputModeChangedEvent>,
@@ -19,8 +24,6 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
     IEventTarget<MoveUpEvent>,
     IEventTarget<MoveDownEvent>
 {
-    private readonly OpenChatViewModel _openChat = new OpenChatViewModel(inputModeHolder);
-
     public event Action<InputModes> InputModeChanged;
 
     public InputModes CurrentInputMode => inputModeHolder.CurrentMode;
@@ -33,7 +36,7 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
     }
 
     public IChatList ChatList { get; } = new ChatListViewModel();
-    public IOpenChat OpenChat => _openChat;
+    public IOpenChat OpenChat => openChatVm;
 
     public void OnKeyDown(KeyEventArgs e) => listener.OnKeyDown(e);
 
@@ -52,15 +55,15 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
 
     public Task Handle(SelectRequestedEvent @event)
     {
-        if (_openChat.Chat is null)
-            _openChat.Chat = ChatList.SelectedChat;
+        if (openChatVm.IsEmpty)
+            openChatVm.SelectChat(ChatList.SelectedChat);
 
         return Task.CompletedTask;
     }
 
     public Task Handle(MoveToTopEvent @event)
     {
-        if (OpenChat is null)
+        if (openChatVm.IsEmpty)
             ChatList.SelectFirst();
 
         return Task.CompletedTask;
@@ -68,7 +71,7 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
 
     public Task Handle(MoveToLineEvent @event)
     {
-        if (OpenChat is null)
+        if (openChatVm.IsEmpty)
             ChatList.SelectByIndex(@event.Number);
 
         return Task.CompletedTask;
@@ -76,7 +79,7 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
 
     public Task Handle(MoveToBottomEvent @event)
     {
-        if (OpenChat is null)
+        if (openChatVm.IsEmpty)
             ChatList.SelectLast();
 
         return Task.CompletedTask;
@@ -84,7 +87,7 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
 
     public Task Handle(MoveUpEvent @event)
     {
-        if (OpenChat is null)
+        if (openChatVm.IsEmpty)
             ChatList.MoveSelectionUp();
 
         return Task.CompletedTask;
@@ -92,7 +95,7 @@ internal class MainViewModel(IInputListener listener, IInputModeHolder inputMode
 
     public Task Handle(MoveDownEvent @event)
     {
-        if (OpenChat is null)
+        if (openChatVm.IsEmpty)
             ChatList.MoveSelectionDown();
 
         return Task.CompletedTask;

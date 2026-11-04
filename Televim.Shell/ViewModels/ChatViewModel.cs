@@ -1,6 +1,4 @@
 using Avalonia.Collections;
-using Televim.Common.Events;
-using Televim.Vim;
 
 namespace Televim.Shell.ViewModels;
 

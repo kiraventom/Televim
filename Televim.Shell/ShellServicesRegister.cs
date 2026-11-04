@@ -13,6 +13,7 @@ internal static class ShellServicesRegister
         services
             .AddSingleton<IInputListener, InputListener>()
             .AddSingleton<IMainViewModel, MainViewModel>()
+            .AddSingleton<IOpenChatViewModel, OpenChatViewModel>()
             .AddSingleton<ICommandTextHolder>(s => s.GetRequiredService<IMainViewModel>())
             .AddSingleton<MainWindow>()
             .AddSingleton<App>();

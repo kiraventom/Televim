@@ -13,5 +13,3 @@ internal class SelectAction(ILogger<SelectAction> logger, IEventService eventSer
         await eventService.Raise(new SelectRequestedEvent());
     }
 }
-
-

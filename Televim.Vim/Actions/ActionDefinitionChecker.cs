@@ -8,7 +8,7 @@ internal class ActionDefinitionChecker(ILogger<ActionDefinitionChecker> logger, 
 
     public ActionCheckResult TryMatch(ActionInput input)
     {
-        if (input.NumberPrefix != 0 && !Definition.AllowNumberPrefix)
+        if (input.NumberPrefix is not null && !Definition.AllowNumberPrefix)
             return ActionCheckResult.NO_MATCH;
 
         if (!Definition.Mode.HasFlag(input.Mode))

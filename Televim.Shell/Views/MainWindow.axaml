@@ -41,7 +41,7 @@
             <ContentControl.ContentTemplate>
                 <DataTemplate DataType="{x:Type vm:IChatList}">
                     <ListBox
-                        SelectedItem="{Binding SelectedChat}"
+                        SelectedItem="{Binding SelectedChat, Mode=TwoWay}"
                         ItemsSource="{Binding Chats}">
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:IChat}">
