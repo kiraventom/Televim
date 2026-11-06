@@ -3,7 +3,7 @@ using Televim.Vim;
 
 namespace Televim.Shell.ViewModels;
 
-public interface IOpenChatViewModel
+public interface IOpenChatViewModel : IFocusableViewModel
 {
     string Name { get; }
     AvaloniaList<IChatMessageViewModel> Messages { get; }
@@ -12,6 +12,6 @@ public interface IOpenChatViewModel
     InputModes CurrentInputMode { get; }
 
     bool IsEmpty { get; }
-    void SelectChat(IChatViewModel chat);
+    Task SelectChat(IChatViewModel chat);
 }
 

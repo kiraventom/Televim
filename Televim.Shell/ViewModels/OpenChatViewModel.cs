@@ -2,16 +2,12 @@ using Avalonia.Collections;
 using Microsoft.Extensions.Logging;
 using Televim.Common.Events;
 using Televim.Vim;
-using Televim.Vim.Actions.NormalMode;
 
 namespace Televim.Shell.ViewModels;
 
-public readonly record struct CloseChatRequestedEvent;
-
 internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IEventService eventService, IInputModeHolder inputModeHolder) :
-    FocusableViewModel,
+    FocusableViewModel(eventService),
     IOpenChatViewModel,
-    IEventTarget<DeselectRequestedEvent>,
     IEventTarget<InputModeChangedEvent>
 {
     public string Name 
@@ -46,15 +42,16 @@ internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IEventServic
 
     public bool IsEmpty => Chat is null;
 
-    public void SelectChat(IChatViewModel chat)
+    public Task SelectChat(IChatViewModel chat)
     {
         Chat = chat;
+        return RequestFocus();
     }
 
-    public Task Handle(DeselectRequestedEvent @event)
+    protected override Task OnUnfocus()
     {
         Chat = null;
-        return eventService.Raise(new CloseChatRequestedEvent());
+        return Task.CompletedTask;
     }
 
     public Task Handle(InputModeChangedEvent @event)

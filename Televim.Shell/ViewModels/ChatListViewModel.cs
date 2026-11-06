@@ -4,10 +4,8 @@ using Televim.Vim.Actions.NormalMode;
 
 namespace Televim.Shell.ViewModels;
 
-public readonly record struct OpenChatRequestedEvent(IChatViewModel Chat);
-
-internal class ChatListViewModel(IEventService eventService) : 
-    FocusableViewModel,
+internal class ChatListViewModel(IEventService eventService, IOpenChatViewModel openChatVm) : 
+    FocusableViewModel(eventService),
     IChatListViewModel,
     IEventTarget<SelectRequestedEvent>,
     IEventTarget<MoveToTopEvent>,
@@ -24,10 +22,7 @@ internal class ChatListViewModel(IEventService eventService) :
         set => SetAndRaise(ref field, value);
     }
 
-    public Task Handle(SelectRequestedEvent @event)
-    {
-        return eventService.Raise(new OpenChatRequestedEvent(SelectedChat));
-    }
+    public Task Handle(SelectRequestedEvent @event) => openChatVm.SelectChat(SelectedChat);
 
     public Task Handle(MoveToTopEvent @event)
     {

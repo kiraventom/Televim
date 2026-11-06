@@ -14,5 +14,5 @@ public interface IMainViewModel : ICommandTextHolder
     IChatListViewModel ChatList { get; }
     IOpenChatViewModel OpenChat { get; }
 
-    FocusableViewModel FocusedViewModel { get; set; }
+    void Init();
 }

@@ -1,4 +1,5 @@
 using Avalonia.Input;
+using Microsoft.Extensions.Logging;
 using Televim.Common.Events;
 using Televim.Shell.Input;
 using Televim.Vim;
@@ -6,13 +7,16 @@ using Televim.Vim.Actions;
 
 namespace Televim.Shell.ViewModels;
 
-internal class MainViewModel(IEventService eventService, IInputListener listener, IInputModeHolder inputModeHolder, IChatListViewModel chatListVm, IOpenChatViewModel openChatVm, IActionBuffer actionBuffer) 
+internal readonly record struct FocusRequestedEvent(IFocusableViewModel Sender);
+internal readonly record struct UnfocusRequestedEvent();
+
+internal class MainViewModel(ILogger<MainViewModel> logger, IEventService eventService, IInputListener listener, IInputModeHolder inputModeHolder, IChatListViewModel chatListVm, IOpenChatViewModel openChatVm, IActionBuffer actionBuffer) 
     : BasePropertyChanged, 
     IMainViewModel, 
     IEventTarget<InputModeChangedEvent>,
     IEventTarget<ActionBufferChangedEvent>,
-    IEventTarget<OpenChatRequestedEvent>,
-    IEventTarget<CloseChatRequestedEvent>
+    IEventTarget<FocusRequestedEvent>,
+    IEventTarget<UnfocusRequestedEvent>
 {
     public event Action<InputModes> InputModeChanged;
 
@@ -28,25 +32,44 @@ internal class MainViewModel(IEventService eventService, IInputListener listener
     public IChatListViewModel ChatList => chatListVm;
     public IOpenChatViewModel OpenChat => openChatVm;
 
-    public FocusableViewModel FocusedViewModel
+    private readonly Stack<IFocusableViewModel> FocusStack = [];
+    private bool _inited = false;
+
+    public void Init()
     {
-        get => field;
-        set
+        Focus(ChatList);
+        _inited = true;
+    }
+
+    private void Focus(IFocusableViewModel newFocused)
+    {
+        if (FocusStack.Contains(newFocused))
         {
-            if (field is {} oldVm)
-            {
-                eventService.Ignore(oldVm);
-                oldVm.IsFocused = false;
-            }
-
-            field = value;
-
-            if (field is {} newVm)
-            {
-                eventService.StopIgnore(newVm);
-                newVm.IsFocused = true;
-            }
+            logger.LogError("Focus requested for object {type} that focus stack already contains", newFocused.GetType().Name);
+            return;
         }
+
+        if (_inited)
+        {
+            var oldFocused = FocusStack.Peek();
+            eventService.Ignore(oldFocused);
+        }
+
+        FocusStack.Push(newFocused);
+        eventService.StopIgnore(newFocused);
+    }
+
+    private bool Unfocus()
+    {
+        if (FocusStack.Count == 1)
+            return false;
+
+        var oldFocused = FocusStack.Pop();
+        eventService.Ignore(oldFocused);
+
+        var newFocused = FocusStack.Peek();
+        eventService.StopIgnore(newFocused);
+        return true;
     }
 
     public void OnKeyDown(KeyEventArgs e) => listener.OnKeyDown(e);
@@ -64,19 +87,15 @@ internal class MainViewModel(IEventService eventService, IInputListener listener
         return Task.CompletedTask;
     }
 
-    // TODO Rework this into something universal?
-    // maybe use same events? vim's for escape/selecg
-    public Task Handle(OpenChatRequestedEvent @event)
+    public Task Handle(FocusRequestedEvent @event)
     {
-        // TODO
-        FocusedViewModel = (FocusableViewModel)OpenChat;
-        OpenChat.SelectChat(@event.Chat);
+        Focus(@event.Sender);
         return Task.CompletedTask;
     }
 
-    public Task Handle(CloseChatRequestedEvent @event)
+    public Task Handle(UnfocusRequestedEvent @event)
     {
-        FocusedViewModel = (FocusableViewModel)ChatList;
+        Unfocus();
         return Task.CompletedTask;
     }
 }

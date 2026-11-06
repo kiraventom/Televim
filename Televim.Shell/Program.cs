@@ -71,7 +71,7 @@ internal static class Program
             chatList.Chats.Add(chat);
             chatList.Chats.Add(otherChat);
 
-            main.FocusedViewModel = (FocusableViewModel)chatList;
+            main.Init();
         }
         // TEST DATA
 

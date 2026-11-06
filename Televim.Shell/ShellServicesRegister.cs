@@ -12,9 +12,9 @@ internal static class ShellServicesRegister
     {
         services
             .AddSingleton<IInputListener, InputListener>()
-            .AddSingleton<IMainViewModel, MainViewModel>()
             .AddSingleton<IOpenChatViewModel, OpenChatViewModel>()
             .AddSingleton<IChatListViewModel, ChatListViewModel>()
+            .AddSingleton<IMainViewModel, MainViewModel>()
             .AddSingleton<ICommandTextHolder>(s => s.GetRequiredService<IMainViewModel>())
             .AddSingleton<MainWindow>()
             .AddSingleton<App>();
