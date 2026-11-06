@@ -60,16 +60,15 @@ internal static class Program
             var main = AppHost.Services.GetRequiredService<IMainViewModel>();
             var chatList = AppHost.Services.GetRequiredService<IChatListViewModel>();
 
-            var chat = new ChatViewModel() { Name = "Chat #1" };
-            chat.Messages.Add(new ChatMessageViewModel { Text = "Text message" });
-            chat.Messages.Add(new ChatMessageViewModel { Text = "Response" });
+            for (int i = 0; i < 100; ++i)
+            {
+                var chat = new ChatViewModel() { Name = $"Chat #{i + 1}" };
+                var messageCount = Random.Shared.Next(1, 6);
+                for (int j = 0; j < messageCount; ++j)
+                    chat.Messages.Add(new ChatMessageViewModel { Text = Path.GetRandomFileName() });
 
-            var otherChat = new ChatViewModel() { Name = "Чат №2" };
-            otherChat.Messages.Add(new ChatMessageViewModel { Text = "Сообщение" });
-            otherChat.Messages.Add(new ChatMessageViewModel { Text = "Ответ" });
-
-            chatList.Chats.Add(chat);
-            chatList.Chats.Add(otherChat);
+                chatList.Chats.Add(chat);
+            }
 
             main.Init();
         }

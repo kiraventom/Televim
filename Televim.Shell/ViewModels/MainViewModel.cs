@@ -53,10 +53,12 @@ internal class MainViewModel(ILogger<MainViewModel> logger, IEventService eventS
         {
             var oldFocused = FocusStack.Peek();
             eventService.Ignore(oldFocused);
+            logger.LogDebug("{Type} has lost focus", oldFocused.GetType().Name);
         }
 
         FocusStack.Push(newFocused);
         eventService.StopIgnore(newFocused);
+        logger.LogDebug("{Type} has gained focus", newFocused.GetType().Name);
     }
 
     private bool Unfocus()
@@ -66,9 +68,11 @@ internal class MainViewModel(ILogger<MainViewModel> logger, IEventService eventS
 
         var oldFocused = FocusStack.Pop();
         eventService.Ignore(oldFocused);
+        logger.LogDebug("{Type} has lost focus", oldFocused.GetType().Name);
 
         var newFocused = FocusStack.Peek();
         eventService.StopIgnore(newFocused);
+        logger.LogDebug("{Type} has gained focus", newFocused.GetType().Name);
         return true;
     }
 

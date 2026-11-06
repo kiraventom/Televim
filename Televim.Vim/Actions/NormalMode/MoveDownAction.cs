@@ -10,7 +10,7 @@ internal class MoveDownAction(ILogger<MoveDownAction> logger, IEventService even
 {
     public override Task Execute()
     {
-        return eventService.Raise(new MoveDownEvent(Input.NumberPrefix.GetValueOrDefault()));
+        return eventService.Raise(new MoveDownEvent(Input.NumberPrefix.GetValueOrDefault(defaultValue: 1)));
     }
 }
 

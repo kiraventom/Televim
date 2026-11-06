@@ -44,13 +44,13 @@ internal class ChatListViewModel(IEventService eventService, IOpenChatViewModel 
 
     public Task Handle(MoveUpEvent @event)
     {
-        MoveSelectionUp();
+        MoveSelectionUp(@event.Number);
         return Task.CompletedTask;
     }
 
     public Task Handle(MoveDownEvent @event)
     {
-        MoveSelectionDown();
+        MoveSelectionDown(@event.Number);
         return Task.CompletedTask;
     }
 
@@ -71,22 +71,36 @@ internal class ChatListViewModel(IEventService eventService, IOpenChatViewModel 
         SelectedChat = Chats.LastOrDefault();
     }
 
-    public void MoveSelectionUp()
+    public void MoveSelectionUp(int number)
     {
         var index = Chats.IndexOf(SelectedChat);
         if (index < 0)
+        {
             SelectLast();
-        else if (index > 0)
-            SelectedChat = Chats[index - 1];
+            return;
+        }
+
+        index -= number;
+        while (index < 0)
+            index += Chats.Count;
+
+        SelectedChat = Chats[index];
     }
 
-    public void MoveSelectionDown()
+    public void MoveSelectionDown(int number)
     {
         var index = Chats.IndexOf(SelectedChat);
         if (index < 0)
+        {
             SelectFirst();
-        else if (index >= 0 && index < Chats.Count - 1)
-            SelectedChat = Chats[index + 1];
+            return;
+        }
+
+        index += number;
+        while (index > Chats.Count - 1)
+            index -= Chats.Count;
+
+        SelectedChat = Chats[index];
     }
 }
 

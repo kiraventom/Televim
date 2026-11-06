@@ -10,7 +10,7 @@ internal class MoveUpAction(ILogger<MoveUpAction> logger, IEventService eventSer
 {
     public override Task Execute()
     {
-        return eventService.Raise(new MoveUpEvent(Input.NumberPrefix.GetValueOrDefault()));
+        return eventService.Raise(new MoveUpEvent(Input.NumberPrefix.GetValueOrDefault(defaultValue: 1)));
     }
 }
 
