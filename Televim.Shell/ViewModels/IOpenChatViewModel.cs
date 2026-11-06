@@ -12,6 +12,6 @@ public interface IOpenChatViewModel : IFocusableViewModel
     InputModes CurrentInputMode { get; }
 
     bool IsEmpty { get; }
-    Task SelectChat(IChatViewModel chat);
+    Task SetChat(IChatViewModel chat, bool focus = false);
 }
 

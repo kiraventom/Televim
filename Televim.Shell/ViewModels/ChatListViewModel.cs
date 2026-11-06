@@ -22,85 +22,58 @@ internal class ChatListViewModel(IEventService eventService, IOpenChatViewModel 
         set => SetAndRaise(ref field, value);
     }
 
-    public Task Handle(SelectRequestedEvent @event) => openChatVm.SelectChat(SelectedChat);
-
-    public Task Handle(MoveToTopEvent @event)
+    private Task SelectChat(IChatViewModel chat)
     {
-        SelectFirst();
-        return Task.CompletedTask;
+        SelectedChat = chat;
+        return PreviewSelectedChat();
     }
 
-    public Task Handle(MoveToLineEvent @event)
-    {
-        SelectByIndex(@event.Number);
-        return Task.CompletedTask;
-    }
+    private Task PreviewSelectedChat() => openChatVm.SetChat(SelectedChat);
+    private Task OpenSelectedChat() => openChatVm.SetChat(SelectedChat, focus: true);
 
-    public Task Handle(MoveToBottomEvent @event)
-    {
-        SelectLast();
-        return Task.CompletedTask;
-    }
+    public Task Handle(SelectRequestedEvent @event) => OpenSelectedChat();
+    public Task Handle(MoveToTopEvent @event) => SelectFirst();
+    public Task Handle(MoveToLineEvent @event) => SelectByIndex(@event.Number);
+    public Task Handle(MoveToBottomEvent @event) => SelectLast();
+    public Task Handle(MoveUpEvent @event) => MoveSelectionUp(@event.Number);
+    public Task Handle(MoveDownEvent @event) => MoveSelectionDown(@event.Number);
 
-    public Task Handle(MoveUpEvent @event)
-    {
-        MoveSelectionUp(@event.Number);
-        return Task.CompletedTask;
-    }
+    public Task SelectFirst() => SelectChat(Chats.FirstOrDefault());
+    public Task SelectLast() => SelectChat(Chats.LastOrDefault());
 
-    public Task Handle(MoveDownEvent @event)
-    {
-        MoveSelectionDown(@event.Number);
-        return Task.CompletedTask;
-    }
-
-    public void SelectFirst()
-    {
-        SelectedChat = Chats.FirstOrDefault();
-    }
-
-    public void SelectByIndex(int index)
+    public Task SelectByIndex(int index)
     {
         var hasChat = index < Chats.Count;
         if (hasChat)
-            SelectedChat = Chats[index];
+            return SelectChat(Chats[index]);
+        
+        return Task.CompletedTask;
     }
 
-    public void SelectLast()
-    {
-        SelectedChat = Chats.LastOrDefault();
-    }
-
-    public void MoveSelectionUp(int number)
+    public Task MoveSelectionUp(int number)
     {
         var index = Chats.IndexOf(SelectedChat);
         if (index < 0)
-        {
-            SelectLast();
-            return;
-        }
+            return SelectLast();
 
         index -= number;
         while (index < 0)
             index += Chats.Count;
 
-        SelectedChat = Chats[index];
+        return SelectChat(Chats[index]);
     }
 
-    public void MoveSelectionDown(int number)
+    public Task MoveSelectionDown(int number)
     {
         var index = Chats.IndexOf(SelectedChat);
         if (index < 0)
-        {
-            SelectFirst();
-            return;
-        }
+            return SelectFirst();
 
         index += number;
         while (index > Chats.Count - 1)
             index -= Chats.Count;
 
-        SelectedChat = Chats[index];
+        return SelectChat(Chats[index]);
     }
 }
 

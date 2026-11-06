@@ -42,10 +42,10 @@ internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IEventServic
 
     public bool IsEmpty => Chat is null;
 
-    public Task SelectChat(IChatViewModel chat)
+    public Task SetChat(IChatViewModel chat, bool focus = false)
     {
         Chat = chat;
-        return RequestFocus();
+        return focus ? RequestFocus() : Task.CompletedTask;
     }
 
     protected override Task OnUnfocus()
