@@ -8,7 +8,7 @@ internal class CommandModeAction(ILogger<CommandModeAction> logger, IEventServic
 {
     public override async Task Execute()
     {
+        logger.LogDebug("Requesting to switch to command mode");
         await eventService.Raise(new InputModeRequestedEvent(InputModes.COMMAND));
-        logger.LogDebug("Switched to command mode");
     }
 }

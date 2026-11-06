@@ -13,6 +13,4 @@ public interface IMainViewModel : ICommandTextHolder
 
     IChatListViewModel ChatList { get; }
     IOpenChatViewModel OpenChat { get; }
-
-    void Init();
 }

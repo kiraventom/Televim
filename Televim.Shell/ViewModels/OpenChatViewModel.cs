@@ -1,36 +1,26 @@
-using Avalonia.Collections;
 using Microsoft.Extensions.Logging;
 using Televim.Common.Events;
+using Televim.Shell.ViewModels.Focusable;
 using Televim.Vim;
 
 namespace Televim.Shell.ViewModels;
 
-internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IEventService eventService, IInputModeHolder inputModeHolder) :
+internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IEventService eventService) :
     FocusableViewModel(eventService),
-    IOpenChatViewModel,
-    IEventTarget<InputModeChangedEvent>
+    IOpenChatViewModel
 {
-    public string Name 
-    { 
-        get => field; 
-        set => SetAndRaise(ref field, value);
-    }
-
-    public AvaloniaList<IChatMessageViewModel> Messages { get; } = [];
-
-    public InputModes CurrentInputMode => inputModeHolder.CurrentMode;
-
     public IChatViewModel Chat
     {
         get => field;
         set
         {
-            field = value;
-            Name = value?.Name;
-            Messages.Clear();
+            SetAndRaise(ref field, value);
+            RaisePropertyChanged(nameof(IsEmpty));
 
-            if (value is not null)
-                Messages.AddRange(value.Messages);
+            if (Chat is null)
+                AllowedInputModes &= ~InputModes.INSERT;
+            else
+                AllowedInputModes |= InputModes.INSERT;
         }
     }
 
@@ -41,22 +31,15 @@ internal class OpenChatViewModel(ILogger<OpenChatViewModel> logger, IEventServic
     }
 
     public bool IsEmpty => Chat is null;
-
-    public Task SetChat(IChatViewModel chat, bool focus = false)
+    
+    public void SetPreviewChat(IChatViewModel chat)
     {
         Chat = chat;
-        return focus ? RequestFocus() : Task.CompletedTask;
     }
 
-    protected override Task OnUnfocus()
+    public Task SetOpenChat(IChatViewModel chat)
     {
-        Chat = null;
-        return Task.CompletedTask;
-    }
-
-    public Task Handle(InputModeChangedEvent @event)
-    {
-        RaisePropertyChanged(nameof(CurrentInputMode));
-        return Task.CompletedTask;
+        Chat = chat;
+        return RequestFocus();
     }
 }

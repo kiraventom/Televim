@@ -1,4 +1,5 @@
 using Avalonia.Collections;
+using Televim.Shell.ViewModels.Focusable;
 
 namespace Televim.Shell.ViewModels;
 

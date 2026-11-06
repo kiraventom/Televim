@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Televim.Shell.Input;
 using Televim.Shell.ViewModels;
+using Televim.Shell.ViewModels.Focusable;
 using Televim.Shell.Views;
 using Televim.Vim.Commands;
 
@@ -14,6 +15,7 @@ internal static class ShellServicesRegister
             .AddSingleton<IInputListener, InputListener>()
             .AddSingleton<IOpenChatViewModel, OpenChatViewModel>()
             .AddSingleton<IChatListViewModel, ChatListViewModel>()
+            .AddSingleton<IFocusManager, FocusManager>()
             .AddSingleton<IMainViewModel, MainViewModel>()
             .AddSingleton<ICommandTextHolder>(s => s.GetRequiredService<IMainViewModel>())
             .AddSingleton<MainWindow>()

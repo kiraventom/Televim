@@ -9,8 +9,8 @@ internal class EscapeCommandModeAction(ILogger<EscapeCommandModeAction> logger, 
 {
     public override async Task Execute()
     {
+        logger.LogDebug("Requesting to switch to normal mode");
         await eventService.Raise(new InputModeRequestedEvent(InputModes.NORMAL));
         commandTextHolder.CommandText = null;
-        logger.LogDebug("Switched to normal mode");
     }
 }

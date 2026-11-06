@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="Televim.Shell.Views.MainWindow"
     xmlns:vm="using:Televim.Shell.ViewModels"
+    xmlns:aconv="using:Avalonia.Data.Converters"
     xmlns:conv="using:Televim.Shell.Views.Converters"
     x:DataType="vm:IMainViewModel"
     Title="Televim"
@@ -10,137 +11,155 @@
     Focusable="True"
     Opened="OnOpened">
 
-<Window.Styles>
-    <Style Selector="TextBlock.commandPrompt">
-        <Setter Property="Opacity" Value="0" />
-        <Setter Property="IsHitTestVisible" Value="False" />
-    </Style>
+    <Window.Styles>
+        <Style Selector="TextBlock.commandPrompt">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
 
-    <Style Selector="TextBlock.commandPrompt.visible">
-        <Setter Property="Opacity" Value="1" />
-        <Setter Property="IsHitTestVisible" Value="True" />
-    </Style>
-</Window.Styles>
+        <Style Selector="TextBlock.commandPrompt.visible">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="IsHitTestVisible" Value="True" />
+        </Style>
+    </Window.Styles>
 
-<Grid>
-    <Grid.RowDefinitions>
-        <RowDefinition/>
-        <RowDefinition Height="Auto"/>
-    </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-    <Grid
-        Grid.Row="0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+        <Grid
+            Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
 
-        <ContentControl
-            Grid.Column="0"
-            Content="{Binding ChatList}">
-            <ContentControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type vm:IChatListViewModel}">
-                    <ListBox
-                        SelectedItem="{Binding SelectedChat, Mode=TwoWay}"
-                        ItemsSource="{Binding Chats}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type vm:IChatViewModel}">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
+            <ListBox
+                Grid.Column="0"
+                SelectedItem="{Binding ChatList.SelectedChat, Mode=TwoWay}"
+                ItemsSource="{Binding ChatList.Chats}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:IChatViewModel}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
 
-                                    <TextBlock
-                                        Grid.Row="0"
-                                        Text="{Binding Name}"
-                                        FontWeight="Bold" />
+                            <TextBlock
+                                Grid.Row="0"
+                                Text="{Binding Name}"
+                                FontWeight="Bold" />
 
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Text="{Binding LastMessage.Text}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DataTemplate>
-            </ContentControl.ContentTemplate>
-        </ContentControl>
+                            <ContentControl
+                                Grid.Row="1"
+                                Content="{Binding MessagePreview}">
+                                <ContentControl.DataTemplates>
+                                    <DataTemplate DataType="{x:Type vm:IChatMessageDraftViewModel}">
+                                        <TextBlock
+                                            Foreground="#FFA54545"
+                                            Text="{Binding Text, StringFormat=Draft: \{0\}}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:IChatMessageViewModel}">
+                                        <TextBlock
+                                            Text="{Binding Text}" />
+                                    </DataTemplate>
+                                </ContentControl.DataTemplates>
+                            </ContentControl>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
-        <ContentControl 
-            Grid.Column="1"
-            Content="{Binding OpenChat}">
-            <ContentControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type vm:IOpenChatViewModel}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+            <Border
+                Visual.ZIndex="1"
+                Grid.Column="1"
+                Background="#44FFFFFF"
+                IsVisible="{Binding !OpenChat.IsFocused}">
+                <TextBlock 
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="15"
+                    Text="Preview" />
+            </Border>
 
-                        <ListBox
-                            Grid.Row="0"
-                            ItemsSource="{Binding Messages}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type vm:IChatMessageViewModel}">
-                                    <Grid>
-                                        <TextBlock Text="{Binding Text}" /> 
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+            <Grid
+                IsVisible="{Binding !OpenChat.IsEmpty}"
+                Grid.Column="1">
 
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsTab="True"
-                            AcceptsReturn="True"
-                            IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter INSERT}}"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            Margin="5,0"/>
-                    </Grid>
-                </DataTemplate>
-            </ContentControl.ContentTemplate>
-        </ContentControl>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    FontWeight="Bold"
+                    Text="{Binding OpenChat.Chat.Name}" />
+
+                <ListBox
+                    Grid.Row="1"
+                    ItemsSource="{Binding OpenChat.Chat.Messages}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:IChatMessageViewModel}">
+                            <Grid>
+                                <TextBlock Text="{Binding Text}" /> 
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBox
+                    Name="MessageTextBox"
+                    Grid.Row="2"
+                    AcceptsTab="True"
+                    AcceptsReturn="True"
+                    IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter INSERT}}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Text="{Binding OpenChat.Chat.Draft.Text, Mode=TwoWay}"
+                    Margin="5,0"/>
+            </Grid>
+        </Grid>
+
+        <Grid
+            Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Column="0"
+                Classes="commandPrompt"
+                Classes.visible="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter COMMAND}}"
+                Visual.ZIndex="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                FontSize="14"
+                Margin="5, 0, 0, 1"
+                Text=":">
+            </TextBlock>
+
+            <TextBox 
+                Grid.Column="0"
+                IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter COMMAND}}"
+                AcceptsTab="True"
+                Padding="9, 0, 0, 0"
+                Name="CommandTextBox"
+                VerticalContentAlignment="Center"
+                Text="{Binding CommandText, Mode=TwoWay}"
+                TextAlignment="Left"/>
+
+            <TextBox 
+                Grid.Column="1"
+                IsEnabled="False"
+                Text="{Binding ActionBuffer}"
+                TextAlignment="Right" />
+        </Grid>
     </Grid>
-
-    <Grid
-        Grid.Row="1">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-
-    <TextBlock
-        Grid.Column="0"
-        Classes="commandPrompt"
-        Classes.visible="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter COMMAND}}"
-        Visual.ZIndex="1"
-        HorizontalAlignment="Left"
-        VerticalAlignment="Center"
-        FontWeight="Bold"
-        FontSize="14"
-        Margin="5, 0, 0, 1"
-        Text=":">
-    </TextBlock>
-
-    <TextBox 
-        Grid.Column="0"
-        IsEnabled="{Binding CurrentInputMode, Converter={conv:InputModeToBoolConverter COMMAND}}"
-        AcceptsTab="True"
-        Padding="9, 0, 0, 0"
-        Name="CommandTextBox"
-        VerticalContentAlignment="Center"
-        Text="{Binding CommandText, Mode=TwoWay}"
-        TextAlignment="Left"/>
-
-    <TextBox 
-        Grid.Column="1"
-        IsEnabled="False"
-        Text="{Binding ActionBuffer}"
-        TextAlignment="Right" />
-    </Grid>
-
-</Grid>
-
 </Window>

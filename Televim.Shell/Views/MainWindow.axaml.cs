@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Microsoft.Extensions.Logging;
 using Televim.Vim;
 using Televim.Shell.ViewModels;
+using Avalonia.Threading;
 
 namespace Televim.Shell.Views;
 
@@ -25,7 +26,24 @@ public partial class MainWindow : Window
 
     private void OnInputModeChanged(InputModes inputMode)
     {
-        // TODO Focus via XAML extension here
+        Dispatcher.Post(() =>
+        {
+            switch (inputMode)
+            {
+                case InputModes.COMMAND:
+                    CommandTextBox.Focus();
+                    break;
+
+                case InputModes.INSERT:
+                    var did = MessageTextBox.Focus();
+                    Logger.LogDebug("MessageTextBox.Focus() returned {did}", did);
+                    break;
+
+                default:
+                    Focus();
+                    break;
+            }
+        }, DispatcherPriority.SystemIdle);
     }
 
     private void OnOpened(object sender, EventArgs e) => Focus();

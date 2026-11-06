@@ -1,5 +1,6 @@
 using Avalonia.Collections;
 using Televim.Common.Events;
+using Televim.Shell.ViewModels.Focusable;
 using Televim.Vim.Actions.NormalMode;
 
 namespace Televim.Shell.ViewModels;
@@ -19,33 +20,41 @@ internal class ChatListViewModel(IEventService eventService, IOpenChatViewModel 
     public IChatViewModel SelectedChat 
     { 
         get => field;
-        set => SetAndRaise(ref field, value);
+        set
+        {
+            SetAndRaise(ref field, value);
+            PreviewSelectedChat();
+        }
     }
 
-    private Task SelectChat(IChatViewModel chat)
-    {
-        SelectedChat = chat;
-        return PreviewSelectedChat();
-    }
-
-    private Task PreviewSelectedChat() => openChatVm.SetChat(SelectedChat);
-    private Task OpenSelectedChat() => openChatVm.SetChat(SelectedChat, focus: true);
+    private void PreviewSelectedChat() => openChatVm.SetPreviewChat(SelectedChat);
+    private Task OpenSelectedChat() => openChatVm.SetOpenChat(SelectedChat);
 
     public Task Handle(SelectRequestedEvent @event) => OpenSelectedChat();
-    public Task Handle(MoveToTopEvent @event) => SelectFirst();
     public Task Handle(MoveToLineEvent @event) => SelectByIndex(@event.Number);
-    public Task Handle(MoveToBottomEvent @event) => SelectLast();
     public Task Handle(MoveUpEvent @event) => MoveSelectionUp(@event.Number);
     public Task Handle(MoveDownEvent @event) => MoveSelectionDown(@event.Number);
 
-    public Task SelectFirst() => SelectChat(Chats.FirstOrDefault());
-    public Task SelectLast() => SelectChat(Chats.LastOrDefault());
+    public Task Handle(MoveToTopEvent @event)
+    {
+        SelectFirst();
+        return Task.CompletedTask;
+    }
+
+    public Task Handle(MoveToBottomEvent @event)
+    {
+        SelectLast();
+        return Task.CompletedTask;
+    }
+
+    public void SelectFirst() => SelectedChat = Chats.FirstOrDefault();
+    public void SelectLast() => SelectedChat = Chats.LastOrDefault();
 
     public Task SelectByIndex(int index)
     {
         var hasChat = index < Chats.Count;
         if (hasChat)
-            return SelectChat(Chats[index]);
+            SelectedChat = Chats[index];
         
         return Task.CompletedTask;
     }
@@ -54,26 +63,38 @@ internal class ChatListViewModel(IEventService eventService, IOpenChatViewModel 
     {
         var index = Chats.IndexOf(SelectedChat);
         if (index < 0)
-            return SelectLast();
+        {
+            SelectLast();
+        }
+        else
+        {
+            index -= number;
+            while (index < 0)
+                index += Chats.Count;
 
-        index -= number;
-        while (index < 0)
-            index += Chats.Count;
+            SelectedChat = Chats[index];
+        }
 
-        return SelectChat(Chats[index]);
+        return Task.CompletedTask;
     }
 
     public Task MoveSelectionDown(int number)
     {
         var index = Chats.IndexOf(SelectedChat);
         if (index < 0)
-            return SelectFirst();
+        {
+            SelectFirst();
+        }
+        else
+        {
+            index += number;
+            while (index > Chats.Count - 1)
+                index -= Chats.Count;
 
-        index += number;
-        while (index > Chats.Count - 1)
-            index -= Chats.Count;
+            SelectedChat = Chats[index];
+        }
 
-        return SelectChat(Chats[index]);
+        return Task.CompletedTask;
     }
 }
 

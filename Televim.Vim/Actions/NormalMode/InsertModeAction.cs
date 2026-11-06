@@ -8,7 +8,7 @@ internal class InsertModeAction(ILogger<InsertModeAction> logger, IEventService 
 {
     public override async Task Execute()
     {
+        logger.LogDebug("Requesting to switch to insert mode");
         await eventService.Raise(new InputModeRequestedEvent(InputModes.INSERT));
-        logger.LogDebug("Switched to insert mode");
     }
 }

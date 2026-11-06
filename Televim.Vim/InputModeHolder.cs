@@ -30,6 +30,14 @@ internal class InputModeHolder(ILogger<InputModeHolder> logger, IEventService ev
 
     public async Task Handle(InputModeRequestedEvent @event)
     {
+        var changing = new InputModeChangingEvent(@event.InputMode);
+        await eventService.Raise(changing);
+        if (changing.Cancel)
+        {
+            logger.LogDebug("Request to change InputMode to {inputMode} was cancelled, staying at {oldInputMode}", @event.InputMode, CurrentMode);
+            return;
+        }
+
         CurrentMode = @event.InputMode;
         await eventService.Raise(new InputModeChangedEvent(CurrentMode));
     }

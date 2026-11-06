@@ -8,7 +8,7 @@ internal class EscapeInsertModeAction(ILogger<EscapeInsertModeAction> logger, IE
 {
     public override async Task Execute()
     {
+        logger.LogDebug("Requesting to switch to normal mode");
         await eventService.Raise(new InputModeRequestedEvent(InputModes.NORMAL));
-        logger.LogDebug("Switched to normal mode");
     }
 }

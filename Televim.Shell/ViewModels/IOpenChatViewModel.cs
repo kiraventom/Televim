@@ -1,17 +1,13 @@
-using Avalonia.Collections;
-using Televim.Vim;
+using Televim.Shell.ViewModels.Focusable;
 
 namespace Televim.Shell.ViewModels;
 
 public interface IOpenChatViewModel : IFocusableViewModel
 {
-    string Name { get; }
-    AvaloniaList<IChatMessageViewModel> Messages { get; }
-
-    string InputText { get; set; }
-    InputModes CurrentInputMode { get; }
+    IChatViewModel Chat { get; }
 
     bool IsEmpty { get; }
-    Task SetChat(IChatViewModel chat, bool focus = false);
+    void SetPreviewChat(IChatViewModel chat);
+    Task SetOpenChat(IChatViewModel chat);
 }
 

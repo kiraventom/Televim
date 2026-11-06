@@ -8,6 +8,7 @@ using Televim.Common;
 using Televim.Vim;
 using Televim.Telegram;
 using Televim.Shell.ViewModels;
+using Televim.Shell.ViewModels.Focusable;
 
 namespace Televim.Shell;
 
@@ -55,24 +56,7 @@ internal static class Program
             });
         });
 
-        // TEST DATA
-        {
-            var main = AppHost.Services.GetRequiredService<IMainViewModel>();
-            var chatList = AppHost.Services.GetRequiredService<IChatListViewModel>();
-
-            for (int i = 0; i < 100; ++i)
-            {
-                var chat = new ChatViewModel() { Name = $"Chat #{i + 1}" };
-                var messageCount = Random.Shared.Next(1, 6);
-                for (int j = 0; j < messageCount; ++j)
-                    chat.Messages.Add(new ChatMessageViewModel { Text = Path.GetRandomFileName() });
-
-                chatList.Chats.Add(chat);
-            }
-
-            main.Init();
-        }
-        // TEST DATA
+        Init();
 
         Log.Information("Host built, running...");
 
@@ -93,6 +77,28 @@ internal static class Program
 
             Log.CloseAndFlush();
         }
+    }
+
+    private static void Init()
+    {
+        // Stupid temp data
+        var main = AppHost.Services.GetRequiredService<IMainViewModel>();
+        var chatList = AppHost.Services.GetRequiredService<IChatListViewModel>();
+        var focusManager = AppHost.Services.GetRequiredService<IFocusManager>();
+
+        for (int i = 0; i < 100; ++i)
+        {
+            var chat = new ChatViewModel() { Name = $"Chat #{i + 1}" };
+            var messageCount = Random.Shared.Next(1, 6);
+            for (int j = 0; j < messageCount; ++j)
+                chat.Messages.Add(new ChatMessageViewModel { Text = Path.GetRandomFileName() });
+
+            chatList.Chats.Add(chat);
+        }
+
+        // Actually important
+        chatList.SelectedChat = chatList.Chats.First();
+        focusManager.Focus(chatList);
     }
 
     public static AppBuilder BuildAvaloniaApp()
