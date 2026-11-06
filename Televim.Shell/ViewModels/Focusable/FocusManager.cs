@@ -21,9 +21,12 @@ internal class FocusManager(ILogger<FocusManager> logger, IEventService eventSer
         }
 
         // Can be empty only on app startup
-        if (FocusStack.Count != 0)
+        if (FocusStack.Count == 0)
         {
             logger.LogInformation("Focus stack is empty, this message should only appear once per session");
+        }
+        else
+        {
             var oldFocused = FocusStack.Peek();
             eventService.Ignore(oldFocused);
             oldFocused.IsFocused = false;

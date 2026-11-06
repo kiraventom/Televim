@@ -7,10 +7,10 @@ internal class NextTabAction(ILogger<NextTabAction> logger) : Action
 {
     public override Task Execute()
     {
-        if (Input.NumberPrefix == 0)
+        if (Input.NumberPrefix is not {} number)
             logger.LogInformation("Moved to next tab");
         else
-            logger.LogInformation("Move to tab number {num}", Input.NumberPrefix);
+            logger.LogInformation("Move to tab number {num}", number);
 
         return Task.CompletedTask;
     }

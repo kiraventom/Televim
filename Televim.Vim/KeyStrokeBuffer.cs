@@ -18,7 +18,7 @@ internal class KeyStrokeBuffer(ILogger<KeyStrokeBuffer> logger, IEventService ev
 
     public void Append(KeyStroke keyStroke)
     {
-        if (keyStroke.IsDigit && inputModeHolder.CurrentModeSupportsPrefixes())
+        if (keyStroke.IsDigit && inputModeHolder.CurrentModeSupportsPrefixes() && _keyStrokes.Count == 0)
             _prefixBuilder.Append(keyStroke.Char.Value);
         else
             _keyStrokes.Add(keyStroke);

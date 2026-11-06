@@ -4,7 +4,7 @@ internal static class KeyNotation
 {
     public const char MODIFIER_SEPARATOR = '-';
 
-    public static string GetModifierStr(Modifiers mod) => Enum.GetName(mod)[0..0];
+    public static string GetModifierStr(Modifiers mod) => Enum.GetName(mod)[..1];
 
     public static IReadOnlyList<KeyStroke> Parse(string notation)
     {
